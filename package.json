@@ -1,0 +1,26 @@
+{
+  "name": "easy-service-all",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --parallel -r --filter=!@easy-service/shared dev",
+    "build": "pnpm --filter @easy-service/shared build && pnpm -r --filter=!@easy-service/shared build",
+    "lint": "pnpm -r lint",
+    "format": "pnpm -r format"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@ffmpeg-installer/linux-x64",
+      "@nestjs/core",
+      "@scarf/scarf",
+      "@whiskeysockets/baileys",
+      "mongodb-memory-server",
+      "protobufjs",
+      "sharp",
+      "unrs-resolver"
+    ]
+  }
+}

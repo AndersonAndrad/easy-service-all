@@ -1,0 +1,9 @@
+/apps/*/node_modules
+/apps/*/dist
+/apps/*/build
+/apps/*/coverage
+/apps/*/logs
+/apps/*/tmp
+/apps/*/.env
+
+node_modules
