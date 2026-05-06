@@ -25,6 +25,14 @@ const rawCategories: NavCategory[] = [
     ],
   },
   {
+    id: "contracts",
+    label: "Contracts",
+    icon: "file-text",
+    items: [
+      { href: "/contracts", label: "Generate contract", icon: "file-text" },
+    ],
+  },
+  {
     id: "settings",
     label: "Configurações",
     icon: "settings",
