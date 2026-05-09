@@ -91,7 +91,8 @@ export default function EditWorkspacePage() {
   }
 
   return (
-    <div className="flex h-[calc(100dvh-3.5rem)] flex-col gap-6 overflow-auto p-4 md:h-[100dvh] md:p-6">
+    <div className="flex h-[calc(100dvh-3.5rem)] flex-col overflow-auto p-4 md:h-[100dvh] md:p-6">
+      <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
         <div className="min-w-0 space-y-1">
           <h1 className="text-balance text-2xl font-semibold tracking-tight text-foreground">
@@ -132,6 +133,7 @@ export default function EditWorkspacePage() {
           }
         }}
       />
+      </div>
     </div>
   );
 }

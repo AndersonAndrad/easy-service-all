@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { ContractsPage } from "@/components/contracts/contracts-page";
 
 export const metadata: Metadata = {
-  title: "Contracts",
-  description: "Generate contracts as PDF.",
+  title: "Contratos",
+  description: "Gere contratos em PDF.",
 };
 
 export default function Page() {

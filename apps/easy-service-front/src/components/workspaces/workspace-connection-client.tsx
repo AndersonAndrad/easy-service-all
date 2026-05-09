@@ -162,7 +162,7 @@ export function WorkspaceConnectionClient({ workspace }: { workspace: Workspace 
 
   return (
     <div className="flex min-h-[calc(100dvh-3.5rem)] flex-col gap-6 overflow-auto p-4 md:min-h-[100dvh] md:p-6">
-      <div className="mx-auto flex w-full max-w-lg flex-col gap-6">
+      <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
           <div className="min-w-0 space-y-1">
             <h1 className="text-balance text-2xl font-semibold tracking-tight text-foreground">

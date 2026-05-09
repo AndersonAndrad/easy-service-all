@@ -9,7 +9,8 @@
       "Bash(wait)",
       "Bash(lsof *)",
       "Bash(node -e \"const b = require\\('/home/a.asilva/projects/my/owner/easy-service-all/node_modules/.pnpm/@whiskeysockets+baileys@6.7.18/node_modules/@whiskeysockets/baileys/lib/index.js'\\); console.log\\(typeof b.fetchLatestBaileysVersion\\);\")",
-      "Bash(curl -s \"https://raw.githubusercontent.com/WhiskeySockets/Baileys/master/src/Defaults/index.ts\")"
+      "Bash(curl -s \"https://raw.githubusercontent.com/WhiskeySockets/Baileys/master/src/Defaults/index.ts\")",
+      "Bash(grep -E \"\\\\.\\(ts|tsx|js\\)$\")"
     ]
   }
 }

@@ -8,11 +8,11 @@ export function ContractsPage() {
   const router = useRouter();
 
   return (
-    <div className="flex flex-col gap-6 p-6 max-w-3xl mx-auto w-full">
+    <div className="flex flex-col gap-6 p-4 md:p-6 w-full max-w-5xl mx-auto">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Contracts</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">Contratos</h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Select the contract type you want to generate.
+          Selecione o tipo de contrato que deseja gerar.
         </p>
       </div>
 

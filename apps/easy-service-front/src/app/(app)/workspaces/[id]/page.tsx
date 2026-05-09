@@ -103,7 +103,8 @@ export default function WorkspaceDetailPage() {
   const owner = isWorkspaceOwner(workspace, userSub);
 
   return (
-    <div className="flex h-[calc(100dvh-3.5rem)] flex-col gap-6 overflow-auto p-4 md:h-[100dvh] md:p-6">
+    <div className="flex h-[calc(100dvh-3.5rem)] flex-col overflow-auto p-4 md:h-[100dvh] md:p-6">
+      <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
       {/* Header */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
         <div className="flex items-center gap-3 min-w-0">
@@ -182,6 +183,7 @@ export default function WorkspaceDetailPage() {
             }
           />
         </div>
+      </div>
       </div>
     </div>
   );

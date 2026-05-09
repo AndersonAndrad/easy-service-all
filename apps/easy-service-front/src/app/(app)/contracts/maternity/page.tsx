@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { MaternityForm } from "@/components/contracts/maternity-form";
 
 export const metadata: Metadata = {
-  title: "Maternity Contract",
-  description: "Generate a maternity contract PDF.",
+  title: "Contrato de Maternidade",
+  description: "Gere um contrato de maternidade em PDF.",
 };
 
 export default function Page() {

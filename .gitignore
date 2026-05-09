@@ -3,6 +3,7 @@
 /apps/*/build
 /apps/*/coverage
 /apps/*/logs
+/apps/*/docs/contracts
 /apps/*/tmp
 /apps/*/.env
 
