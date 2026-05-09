@@ -4,10 +4,13 @@ import type { Server } from 'socket.io';
 import { getSocketUserRoom } from '../socket.constants';
 import type { GenericSocket, SocketTopicListener } from '../types/interface/generic-socket.interface';
 
+type PendingQrEntry = { qr: string; deadlineMs: number | null };
+
 @Injectable()
 export class SocketService implements GenericSocket {
   private readonly logger = new Logger(SocketService.name);
   private readonly listeners = new Map<string, Set<SocketTopicListener>>();
+  private readonly pendingQrCache = new Map<string, PendingQrEntry>();
   private server: Server | null = null;
 
   attachServer(server: Server): void {
@@ -25,6 +28,27 @@ export class SocketService implements GenericSocket {
     const room = getSocketUserRoom(userId.trim());
     this.logger.log(`Session handshake undone (server) \n userId=${userId.trim()} \n reason=logout_or_invalidation \n allSocketsInUserRoom`);
     void this.server.in(room).disconnectSockets(true);
+  }
+
+  setPendingQr(workspaceId: string, qr: string, deadlineMs: number | null): void {
+    this.pendingQrCache.set(workspaceId, { qr, deadlineMs });
+  }
+
+  clearPendingQr(workspaceId: string): void {
+    this.pendingQrCache.delete(workspaceId);
+  }
+
+  replayPendingQrToSocket(workspaceId: string, socketId: string): void {
+    const entry = this.pendingQrCache.get(workspaceId);
+    if (!entry) return;
+    const withinWindow = entry.deadlineMs === null || Date.now() <= entry.deadlineMs;
+    if (!withinWindow) {
+      this.pendingQrCache.delete(workspaceId);
+      return;
+    }
+    if (!this.server) return;
+    this.server.to(socketId).emit('new-connection', { qr: entry.qr });
+    this.logger.log(`Replayed pending QR to socket workspaceId=${workspaceId} socketId=${socketId}`);
   }
 
   emit(room: string, topic: string, payload: unknown): void {

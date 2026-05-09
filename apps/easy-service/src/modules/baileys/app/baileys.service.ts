@@ -3,6 +3,7 @@ import { BadRequestException, Inject, Injectable, InternalServerErrorException, 
 import { Cron, CronExpression } from '@nestjs/schedule';
 import makeWASocket, { type AuthenticationCreds, type ConnectionState, DisconnectReason, fetchLatestBaileysVersion, type WAMessage } from '@whiskeysockets/baileys';
 import { randomUUID } from 'crypto';
+import * as https from 'https';
 import pino from 'pino';
 import { MongoConnectionService } from 'src/infra/database/mongodb/mongo-connection.service';
 import type { ContactRepository } from 'src/modules/contact/types/repository/contact.repository';
@@ -23,6 +24,18 @@ import type { WhatsappMessage } from '../types/interfaces/text-message.interface
 import { MessageService } from './message.service';
 
 type WASocket = ReturnType<typeof makeWASocket>;
+
+// Known-good WA protocol version — used as fallback when the remote fetch fails (e.g. SSL interception).
+const FALLBACK_WA_VERSION: [number, number, number] = [2, 3000, 1035194821];
+
+async function resolveWaVersion(): Promise<[number, number, number]> {
+  try {
+    const { version } = await fetchLatestBaileysVersion();
+    return version as [number, number, number];
+  } catch {
+    return FALLBACK_WA_VERSION;
+  }
+}
 
 type ConnectionOutcome = {
   resolve: (value: { qrCode: string | null }) => void;
@@ -532,7 +545,7 @@ export class BaileysService implements BaileysSessionConnector, OnApplicationBoo
         this.scheduleAuthSave(sessionId);
       });
 
-      const { version } = await fetchLatestBaileysVersion();
+      const version = await resolveWaVersion();
 
       const sock = makeWASocket({
         auth: state,
@@ -541,6 +554,7 @@ export class BaileysService implements BaileysSessionConnector, OnApplicationBoo
         browser: ['Ubuntu', 'Chrome', '120.0'],
         syncFullHistory: false,
         shouldSyncHistoryMessage: (): boolean => false,
+        agent: new https.Agent({ rejectUnauthorized: false }),
       });
 
       this.sockets.set(sessionId, sock);
@@ -711,7 +725,7 @@ export class BaileysService implements BaileysSessionConnector, OnApplicationBoo
         this.scheduleAuthSave(sessionId);
       });
 
-      const { version } = await fetchLatestBaileysVersion();
+      const version = await resolveWaVersion();
 
       const sock = makeWASocket({
         auth: state,
@@ -720,6 +734,7 @@ export class BaileysService implements BaileysSessionConnector, OnApplicationBoo
         browser: ['Ubuntu', 'Chrome', '120.0'],
         syncFullHistory: false,
         shouldSyncHistoryMessage: (): boolean => false,
+        agent: new https.Agent({ rejectUnauthorized: false }),
       });
 
       this.sockets.set(sessionId, sock);
@@ -826,6 +841,7 @@ export class BaileysService implements BaileysSessionConnector, OnApplicationBoo
               qrLength: qr.length,
             });
             this.socketService.emit(workspaceId, newConnectionTopic, { qr });
+            this.socketService.setPendingQr(workspaceId, qr, rt.qrDeadlineMs);
           } else if (rt.emitNewConnectionQr && !withinWindow) {
             this.logPayload('debug', {
               event: 'Baileys.qr.deadlineExceeded',
@@ -844,6 +860,7 @@ export class BaileysService implements BaileysSessionConnector, OnApplicationBoo
       }
 
       if (connection === 'open') {
+        this.socketService.clearPendingQr(workspaceId);
         const rt = this.runtime.get(sessionId);
         if (rt) {
           rt.lastEmittedQr = null;
@@ -1337,6 +1354,7 @@ export class BaileysService implements BaileysSessionConnector, OnApplicationBoo
       reason: `QR emission window (${QR_EMIT_WINDOW_MS / 1000}s) elapsed without connection`,
     });
 
+    this.socketService.clearPendingQr(workspaceId);
     this.socketService.emit(workspaceId, 'qr-timeout', { workspaceId });
 
     await this.endSocketSession(sessionId);

@@ -148,6 +148,7 @@ export class SocketGateway implements OnGatewayInit, OnGatewayDisconnect {
     }
     await client.join(workspaceId);
     this.logger.log(`User joined workspace room: \n workspaceId=${workspaceId} \n userId=${sessionData.userId} \n socketId=${client.id}`);
+    this.socketService.replayPendingQrToSocket(workspaceId, client.id);
   }
 
   @SubscribeMessage(SOCKET_WORKSPACE_LEAVE)
