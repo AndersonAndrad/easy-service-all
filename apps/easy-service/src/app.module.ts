@@ -5,6 +5,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { JwtModule } from './infra/auth/jwt/jwt.module';
 import { MongoDbModule } from './infra/database/mongodb/mongodb.module';
+import { SeedModule } from './infra/seed/seed.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { BaileysModule } from './modules/baileys/baileys.module';
 import { ContactModule } from './modules/contact/contact.module';
@@ -16,7 +17,7 @@ import { WhatsappSessionModule } from './modules/whatsapp-session/whatsapp-sessi
 import { WorkspaceModule } from './modules/workspace/workspace.module';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), MongoDbModule, SocketModule, BaileysModule, UserModule, AuthModule, QueueModule, WorkspaceModule, WhatsappSessionModule, ContactModule, ContractsModule, ScheduleModule.forRoot(), JwtModule],
+  imports: [ConfigModule.forRoot({ isGlobal: true }), MongoDbModule, SocketModule, BaileysModule, UserModule, AuthModule, QueueModule, WorkspaceModule, WhatsappSessionModule, ContactModule, ContractsModule, ScheduleModule.forRoot(), JwtModule, SeedModule],
   controllers: [AppController],
   providers: [AppService],
 })

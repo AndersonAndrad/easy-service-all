@@ -15,7 +15,7 @@ export default function NewWorkspacePage() {
 
   return (
     <div className="flex min-h-[calc(100dvh-3.5rem)] flex-col overflow-auto p-4 md:min-h-[100dvh] md:p-6">
-      <div className="mx-auto flex w-full max-w-lg flex-1 flex-col items-center gap-8">
+      <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col items-center gap-8">
         <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0 space-y-1 text-center sm:text-start">
             <h1 className="text-balance text-2xl font-semibold tracking-tight text-foreground">

@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm --version)",
+      "Bash(pnpm store *)",
+      "Bash(timeout 30 pnpm install --reporter=default)",
+      "Bash(pnpm install *)",
+      "Bash(pnpm --filter easy-service add @hapi/boom qs)",
+      "Bash(wait)",
+      "Bash(lsof *)"
+    ]
+  }
+}

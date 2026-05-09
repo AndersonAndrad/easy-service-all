@@ -11,6 +11,21 @@ const DEFAULT_HEX = "#3b82f6";
 
 const HEX_PATTERN = /^#[0-9A-Fa-f]{6}$/;
 
+function maskDocument(digits: string): string {
+  if (digits.length <= 11) {
+    return digits
+      .replace(/(\d{3})(\d)/, "$1.$2")
+      .replace(/(\d{3})(\d)/, "$1.$2")
+      .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+  }
+  return digits
+    .slice(0, 14)
+    .replace(/(\d{2})(\d)/, "$1.$2")
+    .replace(/(\d{3})(\d)/, "$1.$2")
+    .replace(/(\d{3})(\d)/, "$1/$2")
+    .replace(/(\d{4})(\d{1,2})$/, "$1-$2");
+}
+
 export type WorkspaceFormProps = {
   initialValues?: WorkspaceWriteBody;
   submitLabel: string;
@@ -32,7 +47,9 @@ export function WorkspaceForm({
 }: WorkspaceFormProps) {
   const baseId = useId();
   const [name, setName] = useState(initialValues?.name ?? "");
-  const [document, setDocument] = useState(initialValues?.document ?? "");
+  const [documentDigits, setDocumentDigits] = useState(
+    (initialValues?.document ?? "").replace(/\D/g, "")
+  );
   const initialHex = initialValues?.customInterface.color?.startsWith("#")
     ? initialValues.customInterface.color
     : DEFAULT_HEX;
@@ -56,7 +73,7 @@ export function WorkspaceForm({
     try {
       await onSubmit({
         name: name.trim(),
-        document: document.trim(),
+        document: documentDigits,
         customInterface: {
           color: hex,
         },
@@ -70,7 +87,7 @@ export function WorkspaceForm({
   return (
     <form
       onSubmit={(e) => void handleSubmit(e)}
-      className="w-full max-w-lg space-y-6"
+      className="w-full max-w-3xl space-y-6"
       aria-readonly={readOnly || undefined}
     >
       <div className="space-y-2">
@@ -95,10 +112,11 @@ export function WorkspaceForm({
           id={`${baseId}-document`}
           name="document"
           autoComplete="off"
-          value={document}
-          onChange={(e) => setDocument(e.target.value)}
+          inputMode="numeric"
+          value={maskDocument(documentDigits)}
+          onChange={(e) => setDocumentDigits(e.target.value.replace(/\D/g, "").slice(0, 14))}
           disabled={locked || submitting}
-          placeholder="CNPJ, CPF ou outro identificador"
+          placeholder="00.000.000/0000-00"
         />
       </div>
       <div className="flex items-center gap-2">
