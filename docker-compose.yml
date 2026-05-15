@@ -1,0 +1,31 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: apps/easy-service/Dockerfile
+      network: host
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      PORT: 3001
+      MONGODB_URI: ${MONGODB_URI:-mongodb://admin:admin@127.0.0.1:27017/easy-service?authSource=admin}
+      REDIS_HOST: ${REDIS_HOST:-127.0.0.1}
+      REDIS_PORT: ${REDIS_PORT:-6379}
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+      JWT_SECRET: easy-service
+      JWT_ISSUER: easy-service
+      JWT_AUDIENCE: easy-service
+      NODE_TLS_REJECT_UNAUTHORIZED: "0"
+
+  frontend:
+    build:
+      context: .
+      dockerfile: apps/easy-service-front/Dockerfile
+      network: host
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend

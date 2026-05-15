@@ -1,6 +1,6 @@
 {
   "name": "easy-service-all",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "pnpm --filter @easy-service/shared build && pnpm --parallel -r --filter=!@easy-service/shared dev",

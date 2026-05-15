@@ -6,5 +6,7 @@
 /apps/*/docs/contracts
 /apps/*/tmp
 /apps/*/.env
+/.env
+.releases
 
 node_modules

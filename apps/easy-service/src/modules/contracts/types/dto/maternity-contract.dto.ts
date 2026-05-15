@@ -34,4 +34,8 @@ export class MaternityContractDto implements MaternityContractData {
   @ApiProperty({ example: 'São Paulo' })
   @IsString() @IsNotEmpty()
   city: string;
+
+  @ApiProperty({ example: 'SP' })
+  @IsString() @IsNotEmpty()
+  state: string;
 }

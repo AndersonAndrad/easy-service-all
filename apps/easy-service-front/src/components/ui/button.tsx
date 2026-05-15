@@ -55,8 +55,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       if (!React.isValidElement(child)) {
         throw new Error("Button with asChild expects a single React element child");
       }
+      const childProps = child.props as { className?: string };
       return React.cloneElement(child, {
-        className: cn(classes, child.props.className),
+        className: cn(classes, childProps.className),
         ref,
       } as Record<string, unknown>);
     }

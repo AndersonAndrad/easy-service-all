@@ -27,6 +27,7 @@ const EMPTY_FORM: MaternityContractData = {
   neighborhood: "",
   postalCode: "",
   city: "",
+  state: "",
 };
 
 function maskCpf(digits: string): string {
@@ -45,6 +46,7 @@ type ViaCepResponse = {
   logradouro?: string;
   bairro?: string;
   localidade?: string;
+  uf?: string;
   erro?: boolean;
 };
 
@@ -107,6 +109,7 @@ export function MaternityForm() {
         street: data.logradouro ?? prev.street,
         neighborhood: data.bairro ?? prev.neighborhood,
         city: data.localidade ?? prev.city,
+        state: data.uf ?? prev.state,
       }));
     } catch {
       toast.error("Não foi possível consultar o CEP.");
@@ -122,7 +125,8 @@ export function MaternityForm() {
     setLoading(true);
     try {
       const blob = await generateMaternityContract(accessToken, selectedWorkspace, form);
-      downloadBlob(blob, "contrato-maternidade.pdf");
+      const filename = `CONTRATO E PROCURAÇÃO - ${form.fullName.toUpperCase()}.pdf`;
+      downloadBlob(blob, filename);
       toast.success("Contrato gerado — download iniciado.");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Erro ao gerar o contrato.");
@@ -248,21 +252,32 @@ export function MaternityForm() {
             required
           />
 
-          <div className="grid grid-cols-2 gap-4">
+          <Field
+            label="Bairro"
+            name="neighborhood"
+            value={form.neighborhood}
+            onChange={handleChange}
+            placeholder="Centro"
+            required
+          />
+
+          <div className="grid grid-cols-3 gap-4">
+            <div className="col-span-2">
+              <Field
+                label="Cidade"
+                name="city"
+                value={form.city}
+                onChange={handleChange}
+                placeholder="São Paulo"
+                required
+              />
+            </div>
             <Field
-              label="Bairro"
-              name="neighborhood"
-              value={form.neighborhood}
+              label="UF"
+              name="state"
+              value={form.state}
               onChange={handleChange}
-              placeholder="Centro"
-              required
-            />
-            <Field
-              label="Cidade"
-              name="city"
-              value={form.city}
-              onChange={handleChange}
-              placeholder="São Paulo"
+              placeholder="SP"
               required
             />
           </div>

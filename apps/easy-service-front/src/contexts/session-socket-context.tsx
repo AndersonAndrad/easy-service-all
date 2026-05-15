@@ -142,7 +142,7 @@ export function SessionSocketProvider({ children }: { children: React.ReactNode 
 
       teardownSocket();
 
-      retryTimerRef.current = window.setTimeout(() => {
+      retryTimerRef.current = setTimeout(() => {
         retryTimerRef.current = null;
         reconnectPendingRef.current = false;
         toast.info(`Tentativa ${attemptNumber} de ${MAX_RETRIES}: reconectando sessão em tempo real…`);

@@ -7,6 +7,7 @@ export interface MaternityContractData {
   neighborhood: string;
   postalCode: string;
   city: string;
+  state: string;
 }
 
 export type ContractType = "maternity";
