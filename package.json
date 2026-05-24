@@ -1,12 +1,13 @@
 {
   "name": "easy-service-all",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "scripts": {
     "dev": "pnpm --filter @easy-service/shared build && pnpm --parallel -r --filter=!@easy-service/shared dev",
     "build": "pnpm --filter @easy-service/shared build && pnpm -r --filter=!@easy-service/shared build",
     "lint": "pnpm -r lint",
-    "format": "pnpm -r format"
+    "format": "pnpm -r format",
+    "docker:up": "bash scripts/docker-up.sh"
   },
   "devDependencies": {
     "typescript": "^5.7.3"

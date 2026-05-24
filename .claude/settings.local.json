@@ -39,7 +39,9 @@
       "Bash(systemctl is-active *)",
       "Bash(ip link *)",
       "Read(//sys/devices/virtual/net/sta0/**)",
-      "Bash(sudo -n bpftool prog show)"
+      "Bash(sudo -n bpftool prog show)",
+      "Bash(xargs cat)",
+      "Bash(chmod +x *)"
     ]
   }
 }

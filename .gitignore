@@ -6,6 +6,8 @@
 /apps/*/docs/contracts
 /apps/*/tmp
 /apps/*/.env
+/apps/*/.env.local
+/apps/*/.env.*.local
 /.env
 .releases
 
