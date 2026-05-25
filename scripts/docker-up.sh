@@ -79,7 +79,7 @@ wait_for_port() {
   echo "ERROR: $label did not become ready within ${max_sec}s."
   echo ""
   echo "--- Docker logs (last 50 lines) ---"
-  docker compose logs --tail 50 "$label" 2>/dev/null || true
+  docker compose logs --tail 250 "$label" 2>/dev/null || true
   exit 1
 }
 
