@@ -1,4 +1,10 @@
 services:
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    network_mode: host
+    command: redis-server --port 6379
+
   backend:
     build:
       context: .
@@ -6,6 +12,8 @@ services:
       network: host
     restart: unless-stopped
     network_mode: host
+    depends_on:
+      - redis
     environment:
       PORT: 3001
       MONGODB_URI: ${MONGODB_URI:-mongodb://admin:admin@127.0.0.1:27017/easy-service?authSource=admin}

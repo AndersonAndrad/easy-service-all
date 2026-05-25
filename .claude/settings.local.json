@@ -41,7 +41,10 @@
       "Read(//sys/devices/virtual/net/sta0/**)",
       "Bash(sudo -n bpftool prog show)",
       "Bash(xargs cat)",
-      "Bash(chmod +x *)"
+      "Bash(chmod +x *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git config *)"
     ]
   }
 }
