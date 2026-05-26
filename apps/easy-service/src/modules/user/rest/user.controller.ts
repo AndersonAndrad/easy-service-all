@@ -1,4 +1,4 @@
-import { Body, Controller, Get, NotFoundException, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, NotFoundException, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserService } from '../app/user.service';
 import { CreateUserDto } from '../types/dto/create-user.dto';
@@ -9,6 +9,14 @@ import { UserResponseDto } from '../types/dto/user-response.dto';
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
+
+  @Get()
+  @ApiOperation({ summary: 'List all users' })
+  @ApiResponse({ status: 200, type: UserResponseDto, isArray: true })
+  async findAll(): Promise<UserResponseDto[]> {
+    const users = await this.userService.findAll();
+    return users.map((u) => this.toResponse(u));
+  }
 
   @Post()
   @ApiOperation({ summary: 'Create a new user' })
@@ -55,6 +63,14 @@ export class UserController {
     const user = await this.userService.update({ ...dto, _id: id });
 
     return this.toResponse(user);
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Delete a user' })
+  @ApiResponse({ status: 204 })
+  async delete(@Param('id') id: string): Promise<void> {
+    await this.userService.delete(id);
   }
 
   private toResponse(user: { _id: string; createdAt: Date; email: string; cnpj: string; name: string; userName: string; roles: string[] }): UserResponseDto {

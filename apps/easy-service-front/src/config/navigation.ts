@@ -21,7 +21,6 @@ const rawCategories: NavCategory[] = [
     items: [
       { href: "/chat", label: "Chat", icon: "message-square" },
       { href: "/contacts", label: "Contatos", icon: "users" },
-      { href: "/attendance", label: "Fila de espera", icon: "clock" },
     ],
   },
   {
@@ -33,19 +32,18 @@ const rawCategories: NavCategory[] = [
     ],
   },
   {
-    id: "settings",
-    label: "Configurações",
-    icon: "settings",
+    id: "users",
+    label: "Usuários",
+    icon: "users",
     items: [
-      { href: "/settings/preferences", label: "Preferências", icon: "sliders" },
-      { href: "/settings/profile", label: "Perfil", icon: "user" },
+      { href: "/users", label: "Cadastro de usuário", icon: "user" },
     ],
   },
   {
     id: "workspaces",
-    label: "Workspaces",
+    label: "Empresas",
     icon: "building",
-    items: [{ href: "/workspaces", label: "Lista de workspaces", icon: "building" }],
+    items: [{ href: "/workspaces", label: "Empresas", icon: "building" }],
   },
 ];
 

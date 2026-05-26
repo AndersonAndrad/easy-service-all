@@ -42,7 +42,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const closeMobile = useCallback(() => setMobileOpen(false), []);
 
   return (
-    <div className="relative min-h-screen bg-background">
+    <div className="relative flex min-h-screen bg-background">
       <AppMobileMenuButton onOpen={() => setMobileOpen(true)} />
       <AppMobileOverlay visible={mobileOpen} onClose={closeMobile} />
       <AppSidebar
@@ -54,7 +54,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <main
         id="main"
         className={cn(
-          "min-h-screen transition-[padding] duration-200 ease-out",
+          "flex min-h-screen flex-1 flex-col transition-[padding] duration-200 ease-out",
           "pl-0 pt-14",
           collapsed ? "md:pl-16" : "md:pl-64",
           "md:pt-0"

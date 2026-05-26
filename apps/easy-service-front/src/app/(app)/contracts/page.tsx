@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <div className="flex min-h-full flex-col overflow-y-auto">
+    <div className="flex h-[calc(100dvh-3.5rem)] flex-col md:h-[100dvh]">
       <ContractsPage />
     </div>
   );

@@ -13,6 +13,10 @@ export class UserService {
     return this.userRepository.create(entity);
   }
 
+  async findAll(): Promise<User[]> {
+    return this.userRepository.findAll();
+  }
+
   async findById(id: string): Promise<User | null> {
     if (!this.isValidObjectId(id)) {
       throw new BadRequestException('Invalid user id');
@@ -50,6 +54,11 @@ export class UserService {
       return this.userRepository.update({ ...entity, _id: current._id });
     }
     return this.userRepository.update(payload);
+  }
+
+  async delete(id: string): Promise<void> {
+    if (!this.isValidObjectId(id)) throw new BadRequestException('Invalid user id');
+    await this.userRepository.delete(id);
   }
 
   private isValidObjectId(id: string): boolean {

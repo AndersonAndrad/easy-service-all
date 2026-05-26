@@ -1,10 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
-import { Button } from "@/components/ui/button";
 import { WorkspaceForm } from "@/components/workspaces/workspace-form";
 import { toast } from "@/components/toast/toaster";
 import { useAuth } from "@/contexts/auth-context";
@@ -39,7 +37,7 @@ export default function EditWorkspacePage() {
     try {
       const ws = await getWorkspace(accessToken, id);
       setWorkspace(ws);
-      if (!ws) setLoadError("Workspace não encontrado.");
+      if (!ws) setLoadError("Empresa não encontrada.");
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Não foi possível carregar.";
       setLoadError(msg);
@@ -49,15 +47,13 @@ export default function EditWorkspacePage() {
     }
   }, [isReady, accessToken, id]);
 
-  useEffect(() => {
-    void load();
-  }, [load]);
+  useEffect(() => { void load(); }, [load]);
 
   const owner = workspace ? isWorkspaceOwner(workspace, userSub) : false;
 
   if (loading) {
     return (
-      <div className="flex h-[calc(100dvh-3.5rem)] items-center justify-center p-4 md:h-[100dvh]">
+      <div className="flex h-[calc(100dvh-3.5rem)] items-center justify-center md:h-[100dvh]">
         <p className="text-muted-foreground">Carregando…</p>
       </div>
     );
@@ -65,74 +61,86 @@ export default function EditWorkspacePage() {
 
   if (!workspace || loadError) {
     return (
-      <div className="flex h-[calc(100dvh-3.5rem)] flex-col gap-4 p-4 md:h-[100dvh] md:p-6">
-        <p className="text-destructive" role="alert">
-          {loadError ?? "Workspace não encontrado."}
-        </p>
-        <Button asChild variant="outline">
-          <Link href="/workspaces">Voltar à lista</Link>
-        </Button>
+      <div className="flex h-[calc(100dvh-3.5rem)] flex-col gap-4 p-6 md:h-[100dvh]">
+        <p className="text-destructive" role="alert">{loadError ?? "Empresa não encontrada."}</p>
+        <button
+          type="button"
+          onClick={() => router.push("/workspaces")}
+          className="inline-flex h-9 w-fit cursor-pointer items-center rounded-lg border border-border/60 px-4 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted/40 hover:text-foreground"
+        >
+          Voltar à lista
+        </button>
       </div>
     );
   }
 
   if (!owner) {
     return (
-      <div className="flex h-[calc(100dvh-3.5rem)] flex-col gap-4 p-4 md:h-[100dvh] md:p-6">
-        <h1 className="text-2xl font-semibold text-foreground">Workspace</h1>
-        <p className="text-muted-foreground">
-          Apenas o dono deste workspace pode editá-lo.
-        </p>
-        <Button asChild variant="outline">
-          <Link href="/workspaces">Voltar à lista</Link>
-        </Button>
+      <div className="flex h-[calc(100dvh-3.5rem)] flex-col gap-4 p-6 md:h-[100dvh]">
+        <h1 className="text-xl font-semibold text-foreground">Empresa</h1>
+        <p className="text-sm text-muted-foreground">Apenas o dono desta empresa pode editá-la.</p>
+        <button
+          type="button"
+          onClick={() => router.push("/workspaces")}
+          className="inline-flex h-9 w-fit cursor-pointer items-center rounded-lg border border-border/60 px-4 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted/40 hover:text-foreground"
+        >
+          Voltar à lista
+        </button>
       </div>
     );
   }
 
   return (
-    <div className="flex h-[calc(100dvh-3.5rem)] flex-col overflow-auto p-4 md:h-[100dvh] md:p-6">
-      <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
-        <div className="min-w-0 space-y-1">
-          <h1 className="text-balance text-2xl font-semibold tracking-tight text-foreground">
-            Editar workspace
-          </h1>
-          <p className="text-pretty text-sm text-muted-foreground">
-            Atualize os dados do workspace{" "}
-            <span className="font-medium text-foreground">{workspace.name}</span>.
-          </p>
+    <div className="flex h-[calc(100dvh-3.5rem)] flex-col md:h-[100dvh]">
+      {/* Header */}
+      <div className="border-b border-border/40 px-6 py-5">
+        <div className="mb-3 flex items-center gap-2 text-xs text-muted-foreground/60">
+          <button
+            type="button"
+            onClick={() => router.push("/workspaces")}
+            className="cursor-pointer transition-colors hover:text-muted-foreground"
+          >
+            Empresas
+          </button>
+          <span>/</span>
+          <span className="text-foreground/80">Editar empresa</span>
         </div>
-        <Button variant="outline" asChild className="w-full shrink-0 sm:w-auto">
-          <Link href="/workspaces">Voltar à lista</Link>
-        </Button>
+        <h1 className="text-xl font-semibold text-foreground">Editar empresa</h1>
+        <p className="mt-0.5 text-xs text-muted-foreground/60">
+          Atualizando dados de{" "}
+          <span className="font-medium text-foreground/80">{workspace.name}</span>.
+        </p>
       </div>
 
-      <WorkspaceForm
-        initialValues={{
-          name: workspace.name,
-          document: workspace.document,
-          customInterface: workspace.customInterface,
-          isActive: workspace.isActive,
-        }}
-        submitLabel="Salvar alterações"
-        onSubmit={async (body) => {
-          if (!accessToken) {
-            toast.error("Sessão inválida. Entre novamente.");
-            return;
-          }
-          const tid = toast.loading("Salvando…");
-          try {
-            await updateWorkspace(accessToken, id, body);
-            toast.success("Workspace atualizado.", { id: tid });
-            router.push("/workspaces");
-            router.refresh();
-          } catch (e) {
-            const msg = e instanceof Error ? e.message : "Não foi possível salvar.";
-            toast.error(msg, { id: tid });
-          }
-        }}
-      />
+      {/* Body */}
+      <div className="flex-1 overflow-y-auto">
+        <div className="px-6 py-6">
+          <WorkspaceForm
+            initialValues={{
+              name: workspace.name,
+              document: workspace.document,
+              customInterface: workspace.customInterface,
+              isActive: workspace.isActive,
+            }}
+            submitLabel="Salvar alterações"
+            onSubmit={async (body) => {
+              if (!accessToken) {
+                toast.error("Sessão inválida. Entre novamente.");
+                return;
+              }
+              const tid = toast.loading("Salvando…");
+              try {
+                await updateWorkspace(accessToken, id, body);
+                toast.success("Empresa atualizada.", { id: tid });
+                router.push("/workspaces");
+                router.refresh();
+              } catch (e) {
+                const msg = e instanceof Error ? e.message : "Não foi possível salvar.";
+                toast.error(msg, { id: tid });
+              }
+            }}
+          />
+        </div>
       </div>
     </div>
   );

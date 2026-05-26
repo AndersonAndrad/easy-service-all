@@ -26,6 +26,11 @@ export class MongooseUserRepository implements UserRepository {
     }
   }
 
+  async findAll(): Promise<User[]> {
+    const docs = await userModel.find().sort({ createdAt: -1 });
+    return docs.map((d) => parseDocumentToObj(d));
+  }
+
   async findById(id: string): Promise<User | null> {
     const doc = await userModel.findById(id);
     return doc ? parseDocumentToObj(doc) : null;
@@ -42,5 +47,9 @@ export class MongooseUserRepository implements UserRepository {
   async update(user: Partial<User>): Promise<User> {
     const updated = await userModel.findByIdAndUpdate(user._id, user, { returnDocument: 'after' });
     return parseDocumentToObj(updated);
+  }
+
+  async delete(id: string): Promise<void> {
+    await userModel.findByIdAndDelete(id);
   }
 }

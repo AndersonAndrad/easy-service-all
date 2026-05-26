@@ -10,8 +10,6 @@ import {
   NavIconPanelLeft,
 } from "@/components/icons/nav-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { navigationCategories } from "@/config/navigation";
 import { useAuth } from "@/contexts/auth-context";
 import { APP_VERSION } from "@/lib/app-version";
@@ -83,104 +81,88 @@ export function AppSidebar({
 
   const sidebarInner = (
     <>
+      {/* Top bar — logo / toggle */}
       <div
         className={cn(
-          "flex shrink-0 items-center gap-2 border-b border-border px-2 py-3",
+          "flex h-14 shrink-0 items-center border-b border-sidebar-border px-3",
           compact ? "justify-center" : "justify-between"
         )}
       >
-        <Button
+        {!compact && (
+          <div className="flex items-center gap-2.5">
+            <span className="flex h-7 w-7 items-center justify-center rounded-md bg-sidebar-primary/20 text-xs font-bold text-sidebar-primary">
+              ES
+            </span>
+            <span className="text-sm font-semibold text-sidebar-foreground">Easy Service</span>
+          </div>
+        )}
+        <button
           type="button"
-          variant="ghost"
-          size="icon"
-          className="hidden shrink-0 md:inline-flex"
-          onClick={onToggleCollapsed}
-          aria-expanded={!compact}
+          onClick={compact ? onToggleCollapsed : onToggleCollapsed}
+          className="hidden h-8 w-8 items-center justify-center rounded-md text-white/30 transition-colors hover:bg-white/5 hover:text-white/70 md:flex"
           aria-label={compact ? "Expand sidebar" : "Collapse sidebar"}
         >
-          <NavIconPanelLeft className="size-5" />
-        </Button>
-        <Button
+          <NavIconPanelLeft className={cn("size-4", compact && "rotate-180")} />
+        </button>
+        <button
           type="button"
-          variant="ghost"
-          size="icon"
-          className="inline-flex shrink-0 md:hidden"
           onClick={() => onMobileOpenChange(false)}
+          className="flex h-8 w-8 items-center justify-center rounded-md text-white/30 transition-colors hover:bg-white/5 hover:text-white/70 md:hidden"
           aria-label="Close menu"
         >
-          <NavIconPanelLeft className="size-5 rotate-180" />
-        </Button>
+          <NavIconPanelLeft className="size-4 rotate-180" />
+        </button>
       </div>
 
+      {/* User section */}
       <div
         className={cn(
-          "flex shrink-0 items-center gap-2 border-b border-border px-3 py-4",
-          compact && "items-center px-2"
+          "flex shrink-0 items-center gap-3 border-b border-sidebar-border px-3 py-4",
+          compact && "justify-center px-2"
         )}
       >
-        <Avatar
-          className={cn("ring-2 ring-border", compact ? "size-10" : "size-12")}
-        >
+        <Avatar className="shrink-0 ring-1 ring-sidebar-primary/40" style={{ width: compact ? 36 : 32, height: compact ? 36 : 32 }}>
           {avatarSrc ? (
-            <img
-              src={avatarSrc}
-              alt=""
-              className="h-full w-full object-cover"
-              referrerPolicy="no-referrer"
-            />
+            <img src={avatarSrc} alt="" className="h-full w-full object-cover" referrerPolicy="no-referrer" />
           ) : (
-            <AvatarFallback className="bg-primary/15 text-primary">
+            <AvatarFallback className="bg-sidebar-primary/20 text-xs font-semibold text-sidebar-primary">
               {initials(displayName, displayEmail)}
             </AvatarFallback>
           )}
         </Avatar>
-        {!compact ? (
-          <div className="min-w-0 space-y-0.5">
-            <p className="truncate text-sm font-semibold leading-tight text-foreground">
+        {!compact && (
+          <div className="min-w-0">
+            <p className="truncate text-sm font-medium leading-tight text-sidebar-foreground">
               {displayName}
             </p>
-            <p className="truncate text-xs text-muted-foreground" title={displayEmail}>
+            <p className="truncate text-[11px] text-white/35" title={displayEmail}>
               {displayEmail || "—"}
             </p>
           </div>
-        ) : null}
+        )}
       </div>
 
-      <Separator />
-
+      {/* Nav */}
       <nav
-        className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto overflow-x-hidden px-2 py-3"
+        className="flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto overflow-x-hidden px-2 py-3"
         aria-label="Main navigation"
       >
         {navigationCategories.map((category) => (
-          <details
-            key={category.id}
-            className="group rounded-lg border border-transparent open:border-border open:bg-muted/40"
-            open
-          >
-            <summary
-              className={cn(
-                "flex cursor-pointer list-none items-center gap-2 rounded-md px-2 py-2 text-sm font-medium text-foreground outline-none hover:bg-accent/60 [&::-webkit-details-marker]:hidden",
-                compact && "justify-center px-0"
-              )}
-              title={compact ? category.label : undefined}
-            >
-              <NavIcon
-                name={category.icon}
-                className="size-4 shrink-0 text-muted-foreground"
-              />
-              {!compact ? (
-                <>
-                  <span className="min-w-0 flex-1 truncate">{category.label}</span>
-                  <NavIcon
-                    name="chevron-down"
-                    className="size-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180"
-                  />
-                </>
-              ) : null}
-            </summary>
+          <details key={category.id} className="group" open>
             {!compact ? (
-              <ul className="space-y-0.5 pb-2 pl-2 pt-1" role="list">
+              <summary className="mb-0.5 flex cursor-pointer list-none select-none items-center gap-1.5 rounded-md px-2 py-1.5 text-[10px] font-semibold uppercase tracking-widest text-white/25 outline-none transition-colors hover:text-white/45 [&::-webkit-details-marker]:hidden">
+                <span className="flex-1 truncate">{category.label}</span>
+                <NavIcon
+                  name="chevron-down"
+                  className="size-3 shrink-0 transition-transform group-open:rotate-180"
+                />
+              </summary>
+            ) : (
+              <summary className="hidden [&::-webkit-details-marker]:hidden" />
+            )}
+
+            {!compact ? (
+              <ul className="mb-1 flex flex-col gap-0.5" role="list">
                 {category.items.map((item) => {
                   const active = isActivePath(pathname, item.href);
                   return (
@@ -188,13 +170,15 @@ export function AppSidebar({
                       <Link
                         href={item.href}
                         className={cn(
-                          "flex items-center gap-2 rounded-md px-2 py-2 text-sm transition-colors",
-                          "hover:bg-accent hover:text-accent-foreground",
+                          "relative flex items-center gap-2.5 rounded-md px-3 py-2 text-sm transition-colors",
                           active
-                            ? "bg-accent text-accent-foreground"
-                            : "text-muted-foreground"
+                            ? "bg-sidebar-primary/10 text-sidebar-primary"
+                            : "text-white/45 hover:bg-white/5 hover:text-white/80"
                         )}
                       >
+                        {active && (
+                          <span className="absolute left-0 top-1.5 bottom-1.5 w-0.5 rounded-r-full bg-sidebar-primary" />
+                        )}
                         <NavIcon name={item.icon} className="size-4 shrink-0" />
                         <span className="truncate">{item.label}</span>
                       </Link>
@@ -203,7 +187,7 @@ export function AppSidebar({
                 })}
               </ul>
             ) : (
-              <ul className="flex flex-col items-center gap-1 pb-2 pt-1" role="list">
+              <ul className="flex flex-col items-center gap-0.5 pb-1" role="list">
                 {category.items.map((item) => {
                   const active = isActivePath(pathname, item.href);
                   return (
@@ -212,11 +196,15 @@ export function AppSidebar({
                         href={item.href}
                         title={item.label}
                         className={cn(
-                          "flex size-9 items-center justify-center rounded-md transition-colors",
-                          "hover:bg-accent hover:text-accent-foreground",
-                          active ? "bg-accent text-accent-foreground" : "text-muted-foreground"
+                          "relative flex h-9 w-9 items-center justify-center rounded-md transition-colors",
+                          active
+                            ? "bg-sidebar-primary/10 text-sidebar-primary"
+                            : "text-white/40 hover:bg-white/5 hover:text-white/80"
                         )}
                       >
+                        {active && (
+                          <span className="absolute left-0 top-1.5 bottom-1.5 w-0.5 rounded-r-full bg-sidebar-primary" />
+                        )}
                         <NavIcon name={item.icon} className="size-4" />
                       </Link>
                     </li>
@@ -228,37 +216,28 @@ export function AppSidebar({
         ))}
       </nav>
 
-      <Separator />
-
+      {/* Footer */}
       <div
         className={cn(
-          "mt-auto flex shrink-0 flex-col gap-2 px-3 py-4",
-          compact && "items-center px-2"
+          "mt-auto flex shrink-0 flex-col items-center gap-3 border-t border-sidebar-border px-3 py-4",
+          compact && "px-2"
         )}
       >
-        {!compact ? (
-          <p className="text-center text-[10px] text-muted-foreground">
-            v{APP_VERSION}
-          </p>
-        ) : (
-          <span
-            className="text-[10px] text-muted-foreground"
-            title={`v${APP_VERSION}`}
-          >
-            v{APP_VERSION.slice(0, 3)}
-          </span>
-        )}
-        <Button
+        <button
           type="button"
-          variant="outline"
-          size={compact ? "icon" : "default"}
-          className={cn("gap-2", !compact && "w-full justify-center")}
           onClick={() => signOut()}
-          aria-label="Log out"
+          title="Sair"
+          className={cn(
+            "flex items-center gap-2 rounded-md px-3 py-2 text-sm text-white/35 transition-colors hover:bg-red-500/10 hover:text-red-400",
+            compact ? "h-9 w-9 justify-center" : "w-full"
+          )}
         >
           <NavIcon name="log-out" className="size-4 shrink-0" />
-          {!compact ? <span>Sair</span> : null}
-        </Button>
+          {!compact && <span>Sair</span>}
+        </button>
+        <span className={cn("text-[10px] text-white/20", compact && "text-center")}>
+          v{compact ? APP_VERSION.slice(0, 3) : APP_VERSION}
+        </span>
       </div>
     </>
   );
@@ -266,8 +245,8 @@ export function AppSidebar({
   return (
     <aside
       className={cn(
-        "fixed inset-y-0 left-0 z-50 flex w-64 max-w-[min(100vw,16rem)] flex-col border-r border-border bg-background shadow-sm transition-[width,transform] duration-200 ease-out",
-        compact && "md:w-16 md:max-w-none",
+        "fixed inset-y-0 left-0 z-50 flex flex-col border-r border-sidebar-border bg-sidebar shadow-xl transition-[width,transform] duration-200 ease-out",
+        compact ? "md:w-16" : "w-64",
         mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
       )}
       aria-label="Application sidebar"
@@ -279,16 +258,14 @@ export function AppSidebar({
 
 export function AppMobileMenuButton({ onOpen }: { onOpen: () => void }) {
   return (
-    <Button
+    <button
       type="button"
-      variant="outline"
-      size="icon"
-      className="fixed left-4 top-4 z-30 md:hidden"
       onClick={onOpen}
       aria-label="Open menu"
+      className="fixed left-4 top-4 z-30 flex h-9 w-9 items-center justify-center rounded-md border border-sidebar-border bg-sidebar text-white/50 shadow-md transition-colors hover:text-white/90 md:hidden"
     >
-      <NavIconMenu className="size-5" />
-    </Button>
+      <NavIconMenu className="size-4" />
+    </button>
   );
 }
 
@@ -303,7 +280,7 @@ export function AppMobileOverlay({
   return (
     <button
       type="button"
-      className="fixed inset-0 z-40 bg-black/40 md:hidden"
+      className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden"
       aria-label="Close menu overlay"
       onClick={onClose}
     />

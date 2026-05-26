@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
-import { MaternityForm } from "@/components/contracts/maternity-form";
+import { UsersPage } from "@/components/users/users-page";
 
 export const metadata: Metadata = {
-  title: "Contrato Salário Maternidade",
-  description: "Gere um contrato de salário maternidade em PDF.",
+  title: "Cadastro de Usuário",
+  description: "Gerencie os usuários do sistema.",
 };
 
 export default function Page() {
   return (
     <div className="flex min-h-full flex-col overflow-y-auto">
-      <MaternityForm />
+      <UsersPage />
     </div>
   );
 }

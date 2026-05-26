@@ -15,8 +15,8 @@ export type ContractType = {
 export const CONTRACT_TYPES: ContractType[] = [
   {
     id: "maternity",
-    label: "Contrato de Maternidade",
-    description: "Contrato para serviços de maternidade com dados pessoais e endereço.",
+    label: "Contrato Salário Maternidade",
+    description: "Contrato para serviços de salário maternidade com dados pessoais e endereço.",
     href: "/contracts/maternity",
   },
 ];

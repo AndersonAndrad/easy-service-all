@@ -1,9 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-import { Button } from "@/components/ui/button";
 import { WorkspaceForm } from "@/components/workspaces/workspace-form";
 import { toast } from "@/components/toast/toaster";
 import { useAuth } from "@/contexts/auth-context";
@@ -14,26 +12,31 @@ export default function NewWorkspacePage() {
   const { accessToken, isReady } = useAuth();
 
   return (
-    <div className="flex min-h-[calc(100dvh-3.5rem)] flex-col overflow-auto p-4 md:min-h-[100dvh] md:p-6">
-      <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col items-center gap-8">
-        <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-          <div className="min-w-0 space-y-1 text-center sm:text-start">
-            <h1 className="text-balance text-2xl font-semibold tracking-tight text-foreground">
-              Novo workspace
-            </h1>
-            <p className="text-pretty text-sm text-muted-foreground">
-              Cadastre um novo workspace. Após salvar, você será enviado para a lista. Para conectar o
-              WhatsApp, use a opção de conexão na listagem.
-            </p>
-          </div>
-          <Button variant="outline" asChild className="w-full shrink-0 sm:w-auto">
-            <Link href="/workspaces">Voltar à lista</Link>
-          </Button>
+    <div className="flex h-[calc(100dvh-3.5rem)] flex-col md:h-[100dvh]">
+      {/* Header */}
+      <div className="border-b border-border/40 px-6 py-5">
+        <div className="mb-3 flex items-center gap-2 text-xs text-muted-foreground/60">
+          <button
+            type="button"
+            onClick={() => router.push("/workspaces")}
+            className="cursor-pointer transition-colors hover:text-muted-foreground"
+          >
+            Empresas
+          </button>
+          <span>/</span>
+          <span className="text-foreground/80">Nova empresa</span>
         </div>
+        <h1 className="text-xl font-semibold text-foreground">Nova empresa</h1>
+        <p className="mt-0.5 text-xs text-muted-foreground/60">
+          Após salvar, você poderá conectar o WhatsApp na listagem.
+        </p>
+      </div>
 
-        <div className="flex w-full flex-col items-center">
+      {/* Body */}
+      <div className="flex-1 overflow-y-auto">
+        <div className="px-6 py-6">
           <WorkspaceForm
-            submitLabel="Salvar"
+            submitLabel="Salvar empresa"
             disabled={!isReady || !accessToken}
             onInvalidHex={() => {
               toast.error("Use uma cor hexadecimal válida no formato #RRGGBB.");
@@ -43,10 +46,10 @@ export default function NewWorkspacePage() {
                 toast.error("Sessão inválida. Entre novamente.");
                 return;
               }
-              const tid = toast.loading("Criando workspace…");
+              const tid = toast.loading("Criando empresa…");
               try {
                 await createWorkspace(accessToken, body);
-                toast.success("Workspace criado com sucesso.", { id: tid });
+                toast.success("Empresa criada com sucesso.", { id: tid });
                 router.push("/workspaces");
                 router.refresh();
               } catch (e) {
