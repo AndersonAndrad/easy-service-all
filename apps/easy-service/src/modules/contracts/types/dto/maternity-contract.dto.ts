@@ -1,5 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import type { MaternityContractData } from '@easy-service/shared';
 
 export class MaternityContractDto implements MaternityContractData {
@@ -10,6 +10,10 @@ export class MaternityContractDto implements MaternityContractData {
   @ApiProperty({ example: '123.456.789-00' })
   @IsString() @IsNotEmpty()
   cpf: string;
+
+  @ApiPropertyOptional({ example: '12.345.678-9 SSP/SP' })
+  @IsOptional() @IsString()
+  rg?: string;
 
   @ApiProperty({ example: 'Married' })
   @IsString() @IsNotEmpty()
@@ -38,4 +42,20 @@ export class MaternityContractDto implements MaternityContractData {
   @ApiProperty({ example: 'SP' })
   @IsString() @IsNotEmpty()
   state: string;
+
+  @ApiPropertyOptional({ example: false })
+  @IsOptional() @IsBoolean()
+  isMinor?: boolean;
+
+  @ApiPropertyOptional({ example: 'Ana Santos' })
+  @IsOptional() @IsString()
+  guardianName?: string;
+
+  @ApiPropertyOptional({ example: '12.345.678-9 SSP/SP' })
+  @IsOptional() @IsString()
+  guardianRg?: string;
+
+  @ApiPropertyOptional({ example: '123.456.789-00' })
+  @IsOptional() @IsString()
+  guardianCpf?: string;
 }

@@ -3,6 +3,14 @@ import * as path from 'path';
 
 import type { MaternityContractData } from '@easy-service/shared';
 
+function formatRg(rg: string): string {
+  const d = rg.replace(/\D/g, '').slice(0, 9);
+  return d
+    .replace(/^(\d{2})(\d)/, '$1.$2')
+    .replace(/^(\d{2}\.\d{3})(\d)/, '$1.$2')
+    .replace(/^(\d{2}\.\d{3}\.\d{3})(\d)/, '$1-$2');
+}
+
 function readImageAsDataUri(filename: string): string {
   try {
     const filePath = path.resolve(process.cwd(), 'docs/contracts', filename);
@@ -15,7 +23,7 @@ function readImageAsDataUri(filename: string): string {
   }
 }
 
-export function renderMaternityTemplate(data: MaternityContractData, _workspaceId: string): string {
+export function renderMaternityTemplate(data: MaternityContractData): string {
   const topImageSrc = readImageAsDataUri('top.jpg');
   const bottomImageSrc = readImageAsDataUri('bottom.jpg');
   const today = new Date().toLocaleDateString('pt-BR', {
@@ -156,7 +164,7 @@ export function renderMaternityTemplate(data: MaternityContractData, _workspaceI
   <div class="page-content">
     <h1>Contrato de Honorários Advocatícios</h1>
 
-    <table class="data-grid">
+    ${!data.isMinor ? `<table class="data-grid">
       <tr>
         <td colspan="3">
           <span class="lbl">Contratante</span>
@@ -184,7 +192,15 @@ export function renderMaternityTemplate(data: MaternityContractData, _workspaceI
           <span class="val">SALÁRIO MATERNIDADE</span>
         </td>
       </tr>
-    </table>
+    </table>` : ''}
+
+    ${data.isMinor ? `<div class="block">
+      <span class="ctitle">Contratante:</span> ${data.fullName}, brasileiro(a), menor relativamente incapaz, portador(a) do
+      RG nº ${formatRg(data.rg ?? '')} e CPF nº ${data.cpf}, residente e domiciliado(a) na ${address},
+      ${data.city}/${data.state}, neste ato assistido(a) por seu responsável legal ${data.guardianName ?? ''},
+      brasileiro(a), portador(a) do RG nº ${formatRg(data.guardianRg ?? '')} e CPF nº ${data.guardianCpf ?? ''},
+      residente e domiciliado(a) no mesmo endereço.
+    </div>` : ''}
 
     <div class="block">
       <span class="ctitle">Contratado:</span> THIAGO RIBEIRO EVANGELISTA SOCIEDADE INDIVIDUAL DE ADVOCACIA – inscrita no CNPJ
@@ -256,6 +272,9 @@ export function renderMaternityTemplate(data: MaternityContractData, _workspaceI
       <div class="sig">
         <div class="sig-line">CONTRATANTE</div>
       </div>
+      ${data.isMinor ? `<div class="sig">
+        <div class="sig-line">ASSISTENTE/REPRESENTANTE LEGAL</div>
+      </div>` : ''}
     </div>
   </div>
 
@@ -266,7 +285,7 @@ export function renderMaternityTemplate(data: MaternityContractData, _workspaceI
   <div class="page-content" style="page-break-before: always;">
     <h1>Procuração "Ad Judicia"</h1>
 
-    <table class="data-grid">
+    ${!data.isMinor ? `<table class="data-grid">
       <tr>
         <td colspan="2">
           <span class="lbl">Outorgante</span>
@@ -297,10 +316,18 @@ export function renderMaternityTemplate(data: MaternityContractData, _workspaceI
           <span class="val">SALÁRIO MATERNIDADE</span>
         </td>
       </tr>
-    </table>
+    </table>` : ''}
+
+    ${data.isMinor ? `<div class="block">
+      <span class="ctitle">Outorgante:</span> ${data.fullName}, brasileiro(a), menor relativamente incapaz, portador(a) do
+      RG nº ${formatRg(data.rg ?? '')} e CPF nº ${data.cpf}, residente e domiciliado(a) na ${address},
+      ${data.city}/${data.state}, neste ato assistido(a) por seu responsável legal ${data.guardianName ?? ''},
+      brasileiro(a), portador(a) do RG nº ${formatRg(data.guardianRg ?? '')} e CPF nº ${data.guardianCpf ?? ''},
+      residente e domiciliado(a) no mesmo endereço.
+    </div>` : ''}
 
     <div class="block">
-      <span class="ctitle">Outorgado:</span> 
+      <span class="ctitle">Outorgado:</span>
       <b>THIAGO RIBEIRO EVANGELISTA SOCIEDADE INDIVIDUAL DE ADVOCACIA</b>, inscrita no
       CNPJ nº <b>33.178.744/0001-50</b>, neste ato representada por <b>Dr. THIAGO RIBEIRO EVANGELISTA</b>, inscrito na
       OAB/PI nº <b>5.371</b> e OAB/MA nº <b>19.092-A</b>, brasileiro, casado, CPF nº <b>877.753.873-00</b>, RG nº <b>2.055.520 SSP/PI</b>,
@@ -350,10 +377,13 @@ export function renderMaternityTemplate(data: MaternityContractData, _workspaceI
 
     <div class="spacer"></div>
 
-    <div class="sigs">
-      <div class="sig" style="max-width:60%; margin:0 auto;">
+    <div class="sigs" style="margin-bottom: 10px;">
+      <div class="sig">
         <div class="sig-line">OUTORGANTE</div>
       </div>
+      ${data.isMinor ? `<div class="sig">
+        <div class="sig-line">ASSISTENTE/REPRESENTANTE LEGAL</div>
+      </div>` : ''}
     </div>
   </div>
 

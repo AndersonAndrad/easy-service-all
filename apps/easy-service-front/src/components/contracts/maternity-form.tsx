@@ -1,13 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { MaternityContractData } from "@easy-service/shared";
 import { toast } from "@/components/toast/toaster";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/auth-context";
-import { listWorkspaces } from "@/lib/workspace-client";
-import type { Workspace } from "@/lib/workspace-client";
 import { downloadBlob, generateMaternityContract } from "@/lib/contracts-client";
 
 const MARITAL_STATUS_OPTIONS: { value: string; label: string }[] = [
@@ -21,6 +19,7 @@ const MARITAL_STATUS_OPTIONS: { value: string; label: string }[] = [
 const EMPTY_FORM: MaternityContractData = {
   fullName: "",
   cpf: "",
+  rg: "",
   maritalStatus: "",
   profession: "",
   street: "",
@@ -28,6 +27,10 @@ const EMPTY_FORM: MaternityContractData = {
   postalCode: "",
   city: "",
   state: "",
+  isMinor: false,
+  guardianName: "",
+  guardianRg: "",
+  guardianCpf: "",
 };
 
 function maskCpf(digits: string): string {
@@ -40,6 +43,14 @@ function maskCpf(digits: string): string {
 
 function maskCep(digits: string): string {
   return digits.slice(0, 8).replace(/(\d{5})(\d{1,3})$/, "$1-$2");
+}
+
+function maskRg(value: string): string {
+  const d = value.replace(/\D/g, "").slice(0, 9);
+  return d
+    .replace(/^(\d{2})(\d)/, "$1.$2")
+    .replace(/^(\d{2}\.\d{3})(\d)/, "$1.$2")
+    .replace(/^(\d{2}\.\d{3}\.\d{3})(\d)/, "$1-$2");
 }
 
 type ViaCepResponse = {
@@ -60,27 +71,9 @@ export function MaternityForm() {
   const router = useRouter();
   const { accessToken } = useAuth();
 
-  const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
-  const [selectedWorkspace, setSelectedWorkspace] = useState<string>("");
   const [form, setForm] = useState<MaternityContractData>(EMPTY_FORM);
   const [loading, setLoading] = useState(false);
-  const [loadingWorkspaces, setLoadingWorkspaces] = useState(true);
   const [cepLoading, setCepLoading] = useState(false);
-
-  const loadWorkspaces = useCallback(async () => {
-    if (!accessToken) return;
-    try {
-      const res = await listWorkspaces(accessToken, { page: 1, pageSize: 100, search: "" });
-      setWorkspaces(res.items);
-      if (res.items.length === 1) setSelectedWorkspace(res.items[0].id);
-    } catch {
-      toast.error("Não foi possível carregar os workspaces.");
-    } finally {
-      setLoadingWorkspaces(false);
-    }
-  }, [accessToken]);
-
-  useEffect(() => { void loadWorkspaces(); }, [loadWorkspaces]);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -91,7 +84,20 @@ export function MaternityForm() {
     setForm((prev) => ({ ...prev, cpf: maskCpf(digits) }));
   }
 
-  async function handleCepChange(e: React.ChangeEvent<HTMLInputElement>) {
+  function handleRgChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setForm((prev) => ({ ...prev, rg: maskRg(e.target.value) }));
+  }
+
+  function handleGuardianRgChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setForm((prev) => ({ ...prev, guardianRg: maskRg(e.target.value) }));
+  }
+
+  function handleGuardianCpfChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const digits = e.target.value.replace(/\D/g, "");
+    setForm((prev) => ({ ...prev, guardianCpf: maskCpf(digits) }));
+  }
+
+  const handleCepChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const digits = e.target.value.replace(/\D/g, "").slice(0, 8);
     setForm((prev) => ({ ...prev, postalCode: maskCep(digits) }));
 
@@ -116,15 +122,14 @@ export function MaternityForm() {
     } finally {
       setCepLoading(false);
     }
-  }
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!selectedWorkspace) { toast.error("Selecione um workspace."); return; }
     if (!accessToken) return;
     setLoading(true);
     try {
-      const blob = await generateMaternityContract(accessToken, selectedWorkspace, form);
+      const blob = await generateMaternityContract(accessToken, form);
       const filename = `CONTRATO E PROCURAÇÃO - ${form.fullName.toUpperCase()}.pdf`;
       downloadBlob(blob, filename);
       toast.success("Contrato gerado — download iniciado.");
@@ -156,25 +161,6 @@ export function MaternityForm() {
       </div>
 
       <form onSubmit={(e) => void handleSubmit(e)} className="flex flex-col gap-6">
-        <fieldset className="flex flex-col gap-2">
-          <legend className="text-sm font-medium mb-1">Workspace</legend>
-          {loadingWorkspaces ? (
-            <div className="h-9 w-full animate-pulse rounded-md bg-muted" />
-          ) : (
-            <select
-              value={selectedWorkspace}
-              onChange={(e) => setSelectedWorkspace(e.target.value)}
-              required
-              className="h-9 w-full rounded-md border bg-transparent px-3 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-            >
-              <option value="">Selecione um workspace</option>
-              {workspaces.map((ws) => (
-                <option key={ws.id} value={ws.id}>{ws.name}</option>
-              ))}
-            </select>
-          )}
-        </fieldset>
-
         <fieldset className="flex flex-col gap-4 rounded-lg border p-4">
           <legend className="px-1 text-sm font-medium">Dados pessoais</legend>
 
@@ -195,6 +181,15 @@ export function MaternityForm() {
             placeholder="000.000.000-00"
             inputMode="numeric"
             required
+          />
+
+          <Field
+            label="RG"
+            name="rg"
+            value={form.rg ?? ""}
+            onChange={handleRgChange}
+            placeholder="00.000.000-0"
+            inputMode="numeric"
           />
 
           <div className="flex flex-col gap-1.5">
@@ -221,7 +216,54 @@ export function MaternityForm() {
             placeholder="Professora"
             required
           />
+
+          <label className="flex items-center gap-2 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={form.isMinor ?? false}
+              onChange={(e) =>
+                setForm((prev) => ({ ...prev, isMinor: e.target.checked }))
+              }
+              className="h-4 w-4 rounded border"
+            />
+            <span className="text-sm font-medium">Contratante é menor de idade</span>
+          </label>
         </fieldset>
+
+        {form.isMinor && (
+          <fieldset className="flex flex-col gap-4 rounded-lg border border-amber-200 p-4">
+            <legend className="px-1 text-sm font-medium">Responsável legal</legend>
+
+            <Field
+              label="Nome completo do responsável legal"
+              name="guardianName"
+              value={form.guardianName ?? ""}
+              onChange={handleChange}
+              placeholder="Ana Santos"
+              required
+            />
+
+            <Field
+              label="RG do responsável legal"
+              name="guardianRg"
+              value={form.guardianRg ?? ""}
+              onChange={handleGuardianRgChange}
+              placeholder="00.000.000-0"
+              inputMode="numeric"
+              required
+            />
+
+            <Field
+              label="CPF do responsável legal"
+              name="guardianCpf"
+              value={form.guardianCpf ?? ""}
+              onChange={handleGuardianCpfChange}
+              placeholder="000.000.000-00"
+              inputMode="numeric"
+              required
+            />
+          </fieldset>
+        )}
 
         <fieldset className="flex flex-col gap-4 rounded-lg border p-4">
           <legend className="px-1 text-sm font-medium">Endereço</legend>

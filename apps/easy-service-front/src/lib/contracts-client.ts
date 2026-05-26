@@ -23,12 +23,11 @@ export const CONTRACT_TYPES: ContractType[] = [
 
 export async function generateMaternityContract(
   accessToken: string,
-  workspaceId: string,
   body: MaternityContractData
 ): Promise<Blob> {
   try {
     const res = await publicApiClient.post<ArrayBuffer>(
-      `/workspaces/${encodeURIComponent(workspaceId)}/contracts/maternity`,
+      `/contracts/maternity`,
       body,
       { ...authConfig(accessToken), responseType: "arraybuffer" }
     );

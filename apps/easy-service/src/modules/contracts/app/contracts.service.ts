@@ -22,11 +22,11 @@ export class ContractsService {
     return roles.includes(Roles.ADMIN) || roles.includes(Roles.SUPER_ADMIN);
   }
 
-  async generateMaternityContract(data: MaternityContractData, workspaceId: string): Promise<Buffer> {
+  async generateMaternityContract(data: MaternityContractData): Promise<Buffer> {
     const auth = this.getAuth();
     if (!this.hasAdminRole(auth.roles)) throw new ForbiddenException('Insufficient roles');
 
-    const html = renderMaternityTemplate(data, workspaceId);
+    const html = renderMaternityTemplate(data);
     return this.pdfService.generateFromHtml(html);
   }
 }
