@@ -40,9 +40,12 @@ describe('ContractsController', (): void => {
       controllers: [ContractsController],
       providers: [{ provide: ContractsService, useValue: mockContractsService }],
     })
-      .overrideGuard(JwtAuthGuard).useValue({ canActivate: (): boolean => true })
-      .overrideGuard(RolesGuard).useValue({ canActivate: (): boolean => true })
-      .overrideGuard(WorkspaceAccessGuard).useValue({ canActivate: (): boolean => true })
+      .overrideGuard(JwtAuthGuard)
+      .useValue({ canActivate: (): boolean => true })
+      .overrideGuard(RolesGuard)
+      .useValue({ canActivate: (): boolean => true })
+      .overrideGuard(WorkspaceAccessGuard)
+      .useValue({ canActivate: (): boolean => true })
       .compile();
 
     controller = module.get<ContractsController>(ContractsController);
@@ -67,10 +70,7 @@ describe('ContractsController', (): void => {
       const res = makeRes();
       await controller.generateMaternity('ws-abc', DTO as never, res as never);
 
-      expect(res.setHeader).toHaveBeenCalledWith(
-        'Content-Disposition',
-        'attachment; filename="maternity-contract.pdf"',
-      );
+      expect(res.setHeader).toHaveBeenCalledWith('Content-Disposition', 'attachment; filename="maternity-contract.pdf"');
     });
 
     it('sets Content-Length equal to buffer length', async (): Promise<void> => {

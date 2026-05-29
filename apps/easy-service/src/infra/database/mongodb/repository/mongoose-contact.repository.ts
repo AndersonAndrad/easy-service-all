@@ -14,11 +14,7 @@ export class MongooseContactRepository implements ContactRepository {
     if (input.whatsappId) {
       updateOp.$set = { whatsappId: input.whatsappId };
     }
-    const result = await contactModel.findOneAndUpdate(
-      { workspaceId: input.workspaceId, phone: input.phone },
-      updateOp,
-      { upsert: true, returnDocument: 'after' },
-    );
+    const result = await contactModel.findOneAndUpdate({ workspaceId: input.workspaceId, phone: input.phone }, updateOp, { upsert: true, returnDocument: 'after' });
     return parseDocumentToObj(result) as Contact;
   }
 
@@ -54,10 +50,7 @@ export class MongooseContactRepository implements ContactRepository {
       filter.$or = [{ name: regex }, { alias: regex }, { phone: regex }, { email: regex }];
     }
 
-    const [docs, totalItems] = await Promise.all([
-      contactModel.find(filter).sort({ name: 1, phone: 1 }).skip(skip).limit(pageSize).exec(),
-      contactModel.countDocuments(filter),
-    ]);
+    const [docs, totalItems] = await Promise.all([contactModel.find(filter).sort({ name: 1, phone: 1 }).skip(skip).limit(pageSize).exec(), contactModel.countDocuments(filter)]);
 
     return {
       items: docs.map((doc) => parseDocumentToObj(doc) as Contact),

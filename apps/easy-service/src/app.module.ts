@@ -17,7 +17,22 @@ import { WhatsappSessionModule } from './modules/whatsapp-session/whatsapp-sessi
 import { WorkspaceModule } from './modules/workspace/workspace.module';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), MongoDbModule, SocketModule, BaileysModule, UserModule, AuthModule, QueueModule, WorkspaceModule, WhatsappSessionModule, ContactModule, ContractsModule, ScheduleModule.forRoot(), JwtModule, SeedModule],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    MongoDbModule,
+    SocketModule,
+    BaileysModule,
+    UserModule,
+    AuthModule,
+    QueueModule,
+    WorkspaceModule,
+    WhatsappSessionModule,
+    ContactModule,
+    ContractsModule,
+    ScheduleModule.forRoot(),
+    JwtModule,
+    SeedModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

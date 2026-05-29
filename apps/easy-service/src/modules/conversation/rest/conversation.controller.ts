@@ -15,10 +15,7 @@ export class ConversationController {
 
   @Patch(':conversationId/client-name')
   @ApiOperation({ summary: 'Update the custom display name for the client in a conversation' })
-  async updateClientName(
-    @Param('conversationId') conversationId: string,
-    @Body() body: { customName: string },
-  ): Promise<Conversation> {
+  async updateClientName(@Param('conversationId') conversationId: string, @Body() body: { customName: string }): Promise<Conversation> {
     const customName = typeof body?.customName === 'string' ? body.customName.trim() : '';
     if (!customName) {
       throw new BadRequestException('customName is required');
@@ -28,10 +25,7 @@ export class ConversationController {
 
   @Patch(':conversationKey/chat-name')
   @ApiOperation({ summary: 'Update the display name of a conversation' })
-  async updateChatName(
-    @Param('conversationKey') conversationKey: string,
-    @Body() body: { chatName: string },
-  ): Promise<Conversation> {
+  async updateChatName(@Param('conversationKey') conversationKey: string, @Body() body: { chatName: string }): Promise<Conversation> {
     const chatName = typeof body?.chatName === 'string' ? body.chatName.trim() : '';
     if (!chatName) {
       throw new BadRequestException('chatName is required');

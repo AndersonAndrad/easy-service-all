@@ -3,14 +3,6 @@ import * as path from 'path';
 
 import type { MaternityContractData } from '@easy-service/shared';
 
-function formatRg(rg: string): string {
-  const d = rg.replace(/\D/g, '').slice(0, 9);
-  return d
-    .replace(/^(\d{2})(\d)/, '$1.$2')
-    .replace(/^(\d{2}\.\d{3})(\d)/, '$1.$2')
-    .replace(/^(\d{2}\.\d{3}\.\d{3})(\d)/, '$1-$2');
-}
-
 function readImageAsDataUri(filename: string): string {
   try {
     const filePath = path.resolve(process.cwd(), 'docs/contracts', filename);
@@ -164,7 +156,9 @@ export function renderMaternityTemplate(data: MaternityContractData): string {
   <div class="page-content">
     <h1>Contrato de Honorários Advocatícios</h1>
 
-    ${!data.isMinor ? `<table class="data-grid">
+    ${
+      !data.isMinor
+        ? `<table class="data-grid">
       <tr>
         <td colspan="3">
           <span class="lbl">Contratante</span>
@@ -192,15 +186,21 @@ export function renderMaternityTemplate(data: MaternityContractData): string {
           <span class="val">SALÁRIO MATERNIDADE</span>
         </td>
       </tr>
-    </table>` : ''}
+    </table>`
+        : ''
+    }
 
-    ${data.isMinor ? `<div class="block">
-      <span class="ctitle">Contratante:</span> ${data.fullName}, brasileiro(a), menor relativamente incapaz, portador(a) do
-      RG nº ${formatRg(data.rg ?? '')} e CPF nº ${data.cpf}, residente e domiciliado(a) na ${address},
+    ${
+      data.isMinor
+        ? `<div class="block">
+      <span class="ctitle">Contratante:</span> ${data.fullName}, brasileiro(a), menor relativamente incapaz, inscrito(a) no
+      CPF nº ${data.cpf}, residente e domiciliado(a) na ${address},
       ${data.city}/${data.state}, neste ato assistido(a) por seu responsável legal ${data.guardianName ?? ''},
-      brasileiro(a), portador(a) do RG nº ${formatRg(data.guardianRg ?? '')} e CPF nº ${data.guardianCpf ?? ''},
+      brasileiro(a), inscrito(a) no CPF nº ${data.guardianCpf ?? ''},
       residente e domiciliado(a) no mesmo endereço.
-    </div>` : ''}
+    </div>`
+        : ''
+    }
 
     <div class="block">
       <span class="ctitle">Contratado:</span> THIAGO RIBEIRO EVANGELISTA SOCIEDADE INDIVIDUAL DE ADVOCACIA – inscrita no CNPJ
@@ -272,9 +272,13 @@ export function renderMaternityTemplate(data: MaternityContractData): string {
       <div class="sig">
         <div class="sig-line">CONTRATANTE</div>
       </div>
-      ${data.isMinor ? `<div class="sig">
+      ${
+        data.isMinor
+          ? `<div class="sig">
         <div class="sig-line">ASSISTENTE/REPRESENTANTE LEGAL</div>
-      </div>` : ''}
+      </div>`
+          : ''
+      }
     </div>
   </div>
 
@@ -285,7 +289,9 @@ export function renderMaternityTemplate(data: MaternityContractData): string {
   <div class="page-content" style="page-break-before: always;">
     <h1>Procuração "Ad Judicia"</h1>
 
-    ${!data.isMinor ? `<table class="data-grid">
+    ${
+      !data.isMinor
+        ? `<table class="data-grid">
       <tr>
         <td colspan="2">
           <span class="lbl">Outorgante</span>
@@ -316,15 +322,21 @@ export function renderMaternityTemplate(data: MaternityContractData): string {
           <span class="val">SALÁRIO MATERNIDADE</span>
         </td>
       </tr>
-    </table>` : ''}
+    </table>`
+        : ''
+    }
 
-    ${data.isMinor ? `<div class="block">
-      <span class="ctitle">Outorgante:</span> ${data.fullName}, brasileiro(a), menor relativamente incapaz, portador(a) do
-      RG nº ${formatRg(data.rg ?? '')} e CPF nº ${data.cpf}, residente e domiciliado(a) na ${address},
+    ${
+      data.isMinor
+        ? `<div class="block">
+      <span class="ctitle">Outorgante:</span> ${data.fullName}, brasileiro(a), menor relativamente incapaz, inscrito(a) no
+      CPF nº ${data.cpf}, residente e domiciliado(a) na ${address},
       ${data.city}/${data.state}, neste ato assistido(a) por seu responsável legal ${data.guardianName ?? ''},
-      brasileiro(a), portador(a) do RG nº ${formatRg(data.guardianRg ?? '')} e CPF nº ${data.guardianCpf ?? ''},
+      brasileiro(a), inscrito(a) no CPF nº ${data.guardianCpf ?? ''},
       residente e domiciliado(a) no mesmo endereço.
-    </div>` : ''}
+    </div>`
+        : ''
+    }
 
     <div class="block">
       <span class="ctitle">Outorgado:</span>
@@ -381,9 +393,13 @@ export function renderMaternityTemplate(data: MaternityContractData): string {
       <div class="sig">
         <div class="sig-line">OUTORGANTE</div>
       </div>
-      ${data.isMinor ? `<div class="sig">
+      ${
+        data.isMinor
+          ? `<div class="sig">
         <div class="sig-line">ASSISTENTE/REPRESENTANTE LEGAL</div>
-      </div>` : ''}
+      </div>`
+          : ''
+      }
     </div>
   </div>
 

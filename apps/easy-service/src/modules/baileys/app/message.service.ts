@@ -28,15 +28,7 @@ export class MessageService {
     return this.messageRepository.findMessagesByConversationKey(conversationKey);
   }
 
-  async createAudio(params: {
-    conversationKey: string;
-    workspaceId: string;
-    whatsappSessionId: string;
-    sendBy: string;
-    attendant: ConversationParticipant;
-    client: ConversationParticipant;
-    audioUrl: string;
-  }): Promise<Message> {
+  async createAudio(params: { conversationKey: string; workspaceId: string; whatsappSessionId: string; sendBy: string; attendant: ConversationParticipant; client: ConversationParticipant; audioUrl: string }): Promise<Message> {
     const { audioUrl, ...rest } = params;
     return this.messageRepository.create({
       ...rest,

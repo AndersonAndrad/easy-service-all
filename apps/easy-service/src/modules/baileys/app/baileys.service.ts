@@ -130,11 +130,7 @@ export class BaileysService implements BaileysSessionConnector, OnApplicationBoo
       void this.messageService
         .updateStatus(messageId, 'read')
         .then(() => {
-          this.socketService.emit(
-            getConversationRoom(conversationKey),
-            getReadMessageTopic(conversationKey, messageId),
-            { messageId, conversationKey, status: 'read' },
-          );
+          this.socketService.emit(getConversationRoom(conversationKey), getReadMessageTopic(conversationKey, messageId), { messageId, conversationKey, status: 'read' });
           this.logPayload('log', {
             event: 'Baileys.message.statusUpdated',
             messageId,
@@ -1453,17 +1449,15 @@ export class BaileysService implements BaileysSessionConnector, OnApplicationBoo
         // recipient's, so we must not stamp it onto the contact record.
         const normalizedPhone = sender.phone.trim().replace(/[^0-9+]/g, '');
         const contactName = waMessage.key.fromMe === true ? undefined : sender.name;
-        void this.contactRepository
-          .upsertByPhone({ workspaceId: rt.workspaceId, phone: normalizedPhone, name: contactName })
-          .catch((err: unknown) => {
-            this.logPayload('warn', {
-              event: 'Baileys.contact.autoSaveFailed',
-              sessionId,
-              phone: sender.phone,
-              workspaceId: rt.workspaceId,
-              error: errorToPlain(err),
-            });
+        void this.contactRepository.upsertByPhone({ workspaceId: rt.workspaceId, phone: normalizedPhone, name: contactName }).catch((err: unknown) => {
+          this.logPayload('warn', {
+            event: 'Baileys.contact.autoSaveFailed',
+            sessionId,
+            phone: sender.phone,
+            workspaceId: rt.workspaceId,
+            error: errorToPlain(err),
           });
+        });
 
         // Resolve @mentions in the message text: save whatsappId to each contact and replace
         // @<id> with @<name> so the stored and emitted message is always human-readable.
@@ -1471,17 +1465,11 @@ export class BaileysService implements BaileysSessionConnector, OnApplicationBoo
 
         // If the conversation already stores a display name for this sender, preserve it.
         const senderInConv = conversation.participants.find((p) => p.phone === sender.phone);
-        const clientNameOverride =
-          senderInConv?.name && senderInConv.name !== sender.phone ? senderInConv.name : undefined;
+        const clientNameOverride = senderInConv?.name && senderInConv.name !== sender.phone ? senderInConv.name : undefined;
 
         const sendBy = waMessage.key.fromMe === true ? attendantPhone : sender.phone;
 
-        const created = await this.messageService.create(
-          { ...waMessage, workspaceId: rt.workspaceId, whatsappSessionId: sessionId, sendBy },
-          attendant,
-          conversation.conversationKey,
-          clientNameOverride,
-        );
+        const created = await this.messageService.create({ ...waMessage, workspaceId: rt.workspaceId, whatsappSessionId: sessionId, sendBy }, attendant, conversation.conversationKey, clientNameOverride);
 
         this.socketService.emit(rt.workspaceId, SOCKET_CHAT_NEW_MESSAGE, created);
 

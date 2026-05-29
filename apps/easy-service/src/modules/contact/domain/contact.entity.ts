@@ -11,17 +11,7 @@ export class ContactEntity {
   sharedFromId?: string;
   sharedByUserId?: string;
 
-  constructor(params: {
-    workspaceId: string;
-    phone: string;
-    name?: string;
-    alias?: string;
-    email?: string;
-    avatar?: string;
-    notes?: string;
-    sharedFromId?: string;
-    sharedByUserId?: string;
-  }) {
+  constructor(params: { workspaceId: string; phone: string; name?: string; alias?: string; email?: string; avatar?: string; notes?: string; sharedFromId?: string; sharedByUserId?: string }) {
     this.workspaceId = params.workspaceId;
     this.phone = this.normalizePhone(params.phone);
     if (!this.phone) throw new BadRequestException('Contact phone must contain digits');

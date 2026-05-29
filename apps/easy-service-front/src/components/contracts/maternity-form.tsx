@@ -19,7 +19,6 @@ const MARITAL_STATUS_OPTIONS: { value: string; label: string }[] = [
 const EMPTY_FORM: MaternityContractData = {
   fullName: "",
   cpf: "",
-  rg: "",
   maritalStatus: "",
   profession: "",
   street: "",
@@ -29,7 +28,6 @@ const EMPTY_FORM: MaternityContractData = {
   state: "",
   isMinor: false,
   guardianName: "",
-  guardianRg: "",
   guardianCpf: "",
 };
 
@@ -43,14 +41,6 @@ function maskCpf(digits: string): string {
 
 function maskCep(digits: string): string {
   return digits.slice(0, 8).replace(/(\d{5})(\d{1,3})$/, "$1-$2");
-}
-
-function maskRg(value: string): string {
-  const d = value.replace(/\D/g, "").slice(0, 9);
-  return d
-    .replace(/^(\d{2})(\d)/, "$1.$2")
-    .replace(/^(\d{2}\.\d{3})(\d)/, "$1.$2")
-    .replace(/^(\d{2}\.\d{3}\.\d{3})(\d)/, "$1-$2");
 }
 
 type ViaCepResponse = {
@@ -130,14 +120,6 @@ export function MaternityForm() {
   function handleCpfChange(e: React.ChangeEvent<HTMLInputElement>) {
     const digits = e.target.value.replace(/\D/g, "");
     setForm((prev) => ({ ...prev, cpf: maskCpf(digits) }));
-  }
-
-  function handleRgChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setForm((prev) => ({ ...prev, rg: maskRg(e.target.value) }));
-  }
-
-  function handleGuardianRgChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setForm((prev) => ({ ...prev, guardianRg: maskRg(e.target.value) }));
   }
 
   function handleGuardianCpfChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -225,25 +207,15 @@ export function MaternityForm() {
                   required
                 />
 
-                <div className="grid grid-cols-2 gap-4">
-                  <Field
-                    label="CPF"
-                    name="cpf"
-                    value={form.cpf}
-                    onChange={handleCpfChange}
-                    placeholder="000.000.000-00"
-                    inputMode="numeric"
-                    required
-                  />
-                  <Field
-                    label="RG"
-                    name="rg"
-                    value={form.rg ?? ""}
-                    onChange={handleRgChange}
-                    placeholder="00.000.000-0"
-                    inputMode="numeric"
-                  />
-                </div>
+                <Field
+                  label="CPF"
+                  name="cpf"
+                  value={form.cpf}
+                  onChange={handleCpfChange}
+                  placeholder="000.000.000-00"
+                  inputMode="numeric"
+                  required
+                />
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="flex flex-col">
@@ -359,24 +331,13 @@ export function MaternityForm() {
           {form.isMinor && (
             <div className="mt-8">
               <SectionTitle>Responsável legal</SectionTitle>
-              <div className="grid gap-4 sm:grid-cols-3">
-                <div className="sm:col-span-3">
-                  <Field
-                    label="Nome completo do responsável"
-                    name="guardianName"
-                    value={form.guardianName ?? ""}
-                    onChange={handleChange}
-                    placeholder="Ana Santos"
-                    required
-                  />
-                </div>
+              <div className="grid gap-4 sm:grid-cols-2">
                 <Field
-                  label="RG do responsável"
-                  name="guardianRg"
-                  value={form.guardianRg ?? ""}
-                  onChange={handleGuardianRgChange}
-                  placeholder="00.000.000-0"
-                  inputMode="numeric"
+                  label="Nome completo do responsável"
+                  name="guardianName"
+                  value={form.guardianName ?? ""}
+                  onChange={handleChange}
+                  placeholder="Ana Santos"
                   required
                 />
                 <Field

@@ -79,31 +79,19 @@ export class MongooseConversationRepository implements ConversationRepository {
   }
 
   async updateClientName(conversationId: string, customName: string): Promise<Conversation> {
-    const updated = await conversationModel.findOneAndUpdate(
-      { conversationKey: conversationId },
-      { $set: { 'participants.0.name': customName } },
-      { returnDocument: 'after' },
-    );
+    const updated = await conversationModel.findOneAndUpdate({ conversationKey: conversationId }, { $set: { 'participants.0.name': customName } }, { returnDocument: 'after' });
     if (!updated) throw new Error(`Conversation not found: ${conversationId}`);
     return parseDocumentToObj(updated);
   }
 
   async updateChatName(conversationKey: string, chatName: string): Promise<Conversation> {
-    const updated = await conversationModel.findOneAndUpdate(
-      { conversationKey },
-      { $set: { chatName } },
-      { returnDocument: 'after' },
-    );
+    const updated = await conversationModel.findOneAndUpdate({ conversationKey }, { $set: { chatName } }, { returnDocument: 'after' });
     if (!updated) throw new NotFoundException(`Conversation not found: ${conversationKey}`);
     return parseDocumentToObj(updated);
   }
 
   async addParticipant(conversationKey: string, participant: ConversationParticipant): Promise<Conversation> {
-    const updated = await conversationModel.findOneAndUpdate(
-      { conversationKey, 'participants.phone': { $ne: participant.phone } },
-      { $push: { participants: participant } },
-      { returnDocument: 'after' },
-    );
+    const updated = await conversationModel.findOneAndUpdate({ conversationKey, 'participants.phone': { $ne: participant.phone } }, { $push: { participants: participant } }, { returnDocument: 'after' });
     if (!updated) {
       const existing = await conversationModel.findOne({ conversationKey });
       return parseDocumentToObj(existing);
@@ -112,31 +100,19 @@ export class MongooseConversationRepository implements ConversationRepository {
   }
 
   async addNotation(conversationKey: string, notation: Notation): Promise<Conversation> {
-    const updated = await conversationModel.findOneAndUpdate(
-      { conversationKey },
-      { $push: { notations: notation } },
-      { returnDocument: 'after' },
-    );
+    const updated = await conversationModel.findOneAndUpdate({ conversationKey }, { $push: { notations: notation } }, { returnDocument: 'after' });
     if (!updated) throw new NotFoundException(`Conversation not found: ${conversationKey}`);
     return parseDocumentToObj(updated);
   }
 
   async updateNotation(conversationKey: string, notationId: string, content: string): Promise<Conversation> {
-    const updated = await conversationModel.findOneAndUpdate(
-      { conversationKey, 'notations.id': notationId },
-      { $set: { 'notations.$.content': content, 'notations.$.updatedAt': new Date() } },
-      { returnDocument: 'after' },
-    );
+    const updated = await conversationModel.findOneAndUpdate({ conversationKey, 'notations.id': notationId }, { $set: { 'notations.$.content': content, 'notations.$.updatedAt': new Date() } }, { returnDocument: 'after' });
     if (!updated) throw new NotFoundException(`Notation not found: ${notationId}`);
     return parseDocumentToObj(updated);
   }
 
   async deleteNotation(conversationKey: string, notationId: string): Promise<Conversation> {
-    const updated = await conversationModel.findOneAndUpdate(
-      { conversationKey },
-      { $pull: { notations: { id: notationId } } },
-      { returnDocument: 'after' },
-    );
+    const updated = await conversationModel.findOneAndUpdate({ conversationKey }, { $pull: { notations: { id: notationId } } }, { returnDocument: 'after' });
     if (!updated) throw new NotFoundException(`Conversation not found: ${conversationKey}`);
     return parseDocumentToObj(updated);
   }

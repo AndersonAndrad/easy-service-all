@@ -12,14 +12,7 @@ import { CONTACT_REPOSITORY } from './types/repository/contact.repository';
 @Module({
   imports: [WorkspacePersistenceModule],
   controllers: [ContactController],
-  providers: [
-    ContactService,
-    CurrentAuthContextProvider,
-    JwtAuthGuard,
-    RolesGuard,
-    Reflector,
-    { provide: CONTACT_REPOSITORY, useClass: MongooseContactRepository },
-  ],
+  providers: [ContactService, CurrentAuthContextProvider, JwtAuthGuard, RolesGuard, Reflector, { provide: CONTACT_REPOSITORY, useClass: MongooseContactRepository }],
   exports: [ContactService],
 })
 export class ContactModule {}

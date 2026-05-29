@@ -90,13 +90,7 @@ export class AudioUploadService {
       whatsappBuffer = rawBuffer;
     }
 
-    return this.baileysService.sendAudioToConversation(
-      session.conversationKey,
-      session.workspaceId,
-      whatsappBuffer,
-      audioUrl,
-      'audio/ogg; codecs=opus',
-    );
+    return this.baileysService.sendAudioToConversation(session.conversationKey, session.workspaceId, whatsappBuffer, audioUrl, 'audio/ogg; codecs=opus');
   }
 
   private async convertToOggOpus(inputBuffer: Buffer): Promise<Buffer> {
@@ -105,15 +99,7 @@ export class AudioUploadService {
     try {
       await writeFile(tmpIn, inputBuffer);
       await new Promise<void>((resolve, reject) => {
-        ffmpeg(tmpIn)
-          .audioCodec('libopus')
-          .audioChannels(1)
-          .audioFrequency(48000)
-          .format('ogg')
-          .output(tmpOut)
-          .on('end', resolve)
-          .on('error', reject)
-          .run();
+        ffmpeg(tmpIn).audioCodec('libopus').audioChannels(1).audioFrequency(48000).format('ogg').output(tmpOut).on('end', resolve).on('error', reject).run();
       });
       return await readFile(tmpOut);
     } finally {

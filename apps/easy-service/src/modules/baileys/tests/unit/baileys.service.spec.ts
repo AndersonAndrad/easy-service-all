@@ -221,11 +221,7 @@ describe('BaileysService', () => {
       await onMessagesUpsert!({ messages: [textMessage] });
 
       expect(conversationService.getOrCreate).toHaveBeenCalled();
-      expect(messageService.create).toHaveBeenCalledWith(
-        expect.objectContaining({ sendBy: '5521961234567' }),
-        expect.any(Object),
-        mockConversation.conversationKey,
-      );
+      expect(messageService.create).toHaveBeenCalledWith(expect.objectContaining({ sendBy: '5521961234567' }), expect.any(Object), mockConversation.conversationKey);
     });
 
     it('persists outbound text when fromMe is true', async () => {
@@ -246,11 +242,7 @@ describe('BaileysService', () => {
       await onMessagesUpsert!({ messages: [fromMeMessage] });
 
       expect(conversationService.getOrCreate).toHaveBeenCalled();
-      expect(messageService.create).toHaveBeenCalledWith(
-        expect.objectContaining({ sendBy: '5511961234567' }),
-        expect.any(Object),
-        mockConversation.conversationKey,
-      );
+      expect(messageService.create).toHaveBeenCalledWith(expect.objectContaining({ sendBy: '5511961234567' }), expect.any(Object), mockConversation.conversationKey);
     });
 
     it('does not call create when message has no text content', async () => {

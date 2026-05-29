@@ -12,14 +12,6 @@ import { ContractsController } from './rest/controllers/contracts.controller';
 @Module({
   imports: [WorkspacePersistenceModule],
   controllers: [ContractsController],
-  providers: [
-    ContractsService,
-    PdfService,
-    CurrentAuthContextProvider,
-    JwtAuthGuard,
-    RolesGuard,
-    WorkspaceAccessGuard,
-    Reflector,
-  ],
+  providers: [ContractsService, PdfService, CurrentAuthContextProvider, JwtAuthGuard, RolesGuard, WorkspaceAccessGuard, Reflector],
 })
 export class ContractsModule {}

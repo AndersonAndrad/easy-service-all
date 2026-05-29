@@ -8,12 +8,7 @@ import { NotationsController } from './rest/notations.controlle';
 
 @Module({
   controllers: [ConversationController, NotationsController],
-  providers: [
-    ConversationService,
-    NotationService,
-    { provide: CONVERSATION_REPOSITORY, useClass: MongooseConversationRepository },
-    { provide: MESSAGE_REPOSITORY, useClass: MongooseMessageRepository },
-  ],
+  providers: [ConversationService, NotationService, { provide: CONVERSATION_REPOSITORY, useClass: MongooseConversationRepository }, { provide: MESSAGE_REPOSITORY, useClass: MongooseMessageRepository }],
   exports: [ConversationService, { provide: MESSAGE_REPOSITORY, useClass: MongooseMessageRepository }],
 })
 export class ConversationModule {}

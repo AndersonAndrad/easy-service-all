@@ -1,14 +1,4 @@
-import {
-  Body,
-  Controller,
-  HttpCode,
-  HttpStatus,
-  Post,
-  Res,
-  UseGuards,
-  UsePipes,
-  ValidationPipe,
-} from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post, Res, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import type { Response } from 'express';
 import { Roles } from 'src/shared/enums/roles.enum';
@@ -30,10 +20,7 @@ export class ContractsController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Generate a maternity contract PDF' })
   @UsePipes(new ValidationPipe({ transform: true, whitelist: true, forbidNonWhitelisted: true }))
-  async generateMaternity(
-    @Body() dto: MaternityContractDto,
-    @Res() res: Response,
-  ): Promise<void> {
+  async generateMaternity(@Body() dto: MaternityContractDto, @Res() res: Response): Promise<void> {
     const pdf = await this.contractsService.generateMaternityContract(dto);
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', 'attachment; filename="maternity-contract.pdf"');

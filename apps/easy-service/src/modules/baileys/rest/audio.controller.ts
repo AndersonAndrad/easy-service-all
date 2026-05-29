@@ -24,11 +24,7 @@ export class AudioController {
     if (!body?.conversationKey || !body?.workspaceId) {
       throw new BadRequestException('conversationKey and workspaceId are required');
     }
-    const uploadId = this.audioUploadService.startUpload(
-      body.conversationKey,
-      body.workspaceId,
-      body.mimeType ?? 'audio/webm',
-    );
+    const uploadId = this.audioUploadService.startUpload(body.conversationKey, body.workspaceId, body.mimeType ?? 'audio/webm');
     return { uploadId };
   }
 
@@ -36,10 +32,7 @@ export class AudioController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Upload one chunk (base64-encoded audio bytes)' })
-  chunk(
-    @Param('uploadId') uploadId: string,
-    @Body() body: { index: number; total: number; data: string },
-  ): void {
+  chunk(@Param('uploadId') uploadId: string, @Body() body: { index: number; total: number; data: string }): void {
     if (body.index == null || body.total == null || !body.data) {
       throw new BadRequestException('index, total and data are required');
     }

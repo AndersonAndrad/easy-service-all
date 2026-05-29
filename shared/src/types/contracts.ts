@@ -1,7 +1,6 @@
 export interface MaternityContractData {
   fullName: string;
   cpf: string;
-  rg?: string;
   maritalStatus: string;
   profession: string;
   street: string;
@@ -11,7 +10,6 @@ export interface MaternityContractData {
   state: string;
   isMinor?: boolean;
   guardianName?: string;
-  guardianRg?: string;
   guardianCpf?: string;
 }
 

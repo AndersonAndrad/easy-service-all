@@ -17,17 +17,8 @@ export class ConversationService {
     return this.conversationRepository.findByConversationKey(conversationKey);
   }
 
-  async getOrCreate(params: {
-    type: 'direct';
-    workspaceId: string;
-    whatsappSessionId: string;
-    attendant: ConversationParticipant;
-    client: ConversationParticipant;
-  }): Promise<Conversation> {
-    const existing = await this.conversationRepository.findOneByParticipants(
-      params.attendant.phone,
-      params.client.phone,
-    );
+  async getOrCreate(params: { type: 'direct'; workspaceId: string; whatsappSessionId: string; attendant: ConversationParticipant; client: ConversationParticipant }): Promise<Conversation> {
+    const existing = await this.conversationRepository.findOneByParticipants(params.attendant.phone, params.client.phone);
     if (existing) return existing;
     return this.create({
       type: 'direct',
@@ -38,14 +29,7 @@ export class ConversationService {
     });
   }
 
-  async getOrCreateGroup(params: {
-    workspaceId: string;
-    whatsappSessionId: string;
-    attendant: ConversationParticipant;
-    groupJid: string;
-    groupName?: string;
-    sender: ConversationParticipant;
-  }): Promise<Conversation> {
+  async getOrCreateGroup(params: { workspaceId: string; whatsappSessionId: string; attendant: ConversationParticipant; groupJid: string; groupName?: string; sender: ConversationParticipant }): Promise<Conversation> {
     const existing = await this.conversationRepository.findByGroupJid(params.groupJid, params.workspaceId);
 
     if (existing) {
