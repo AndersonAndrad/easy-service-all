@@ -99,7 +99,7 @@ export function AppSidebar({
         <button
           type="button"
           onClick={compact ? onToggleCollapsed : onToggleCollapsed}
-          className="hidden h-8 w-8 items-center justify-center rounded-md text-white/30 transition-colors hover:bg-white/5 hover:text-white/70 md:flex"
+          className="hidden h-8 w-8 items-center justify-center rounded-md text-sidebar-foreground/30 transition-colors hover:bg-sidebar-foreground/5 hover:text-sidebar-foreground/70 md:flex"
           aria-label={compact ? "Expand sidebar" : "Collapse sidebar"}
         >
           <NavIconPanelLeft className={cn("size-4", compact && "rotate-180")} />
@@ -107,7 +107,7 @@ export function AppSidebar({
         <button
           type="button"
           onClick={() => onMobileOpenChange(false)}
-          className="flex h-8 w-8 items-center justify-center rounded-md text-white/30 transition-colors hover:bg-white/5 hover:text-white/70 md:hidden"
+          className="flex h-8 w-8 items-center justify-center rounded-md text-sidebar-foreground/30 transition-colors hover:bg-sidebar-foreground/5 hover:text-sidebar-foreground/70 md:hidden"
           aria-label="Close menu"
         >
           <NavIconPanelLeft className="size-4 rotate-180" />
@@ -135,7 +135,7 @@ export function AppSidebar({
             <p className="truncate text-sm font-medium leading-tight text-sidebar-foreground">
               {displayName}
             </p>
-            <p className="truncate text-[11px] text-white/35" title={displayEmail}>
+            <p className="truncate text-[11px] text-sidebar-foreground/35" title={displayEmail}>
               {displayEmail || "—"}
             </p>
           </div>
@@ -150,7 +150,7 @@ export function AppSidebar({
         {navigationCategories.map((category) => (
           <details key={category.id} className="group" open>
             {!compact ? (
-              <summary className="mb-0.5 flex cursor-pointer list-none select-none items-center gap-1.5 rounded-md px-2 py-1.5 text-[10px] font-semibold uppercase tracking-widest text-white/25 outline-none transition-colors hover:text-white/45 [&::-webkit-details-marker]:hidden">
+              <summary className="mb-0.5 flex cursor-pointer list-none select-none items-center gap-1.5 rounded-md px-2 py-1.5 text-[10px] font-semibold uppercase tracking-widest text-sidebar-foreground/25 outline-none transition-colors hover:text-sidebar-foreground/45 [&::-webkit-details-marker]:hidden">
                 <span className="flex-1 truncate">{category.label}</span>
                 <NavIcon
                   name="chevron-down"
@@ -173,7 +173,7 @@ export function AppSidebar({
                           "relative flex items-center gap-2.5 rounded-md px-3 py-2 text-sm transition-colors",
                           active
                             ? "bg-sidebar-primary/10 text-sidebar-primary"
-                            : "text-white/45 hover:bg-white/5 hover:text-white/80"
+                            : "text-sidebar-foreground/45 hover:bg-sidebar-foreground/5 hover:text-sidebar-foreground/80"
                         )}
                       >
                         {active && (
@@ -199,7 +199,7 @@ export function AppSidebar({
                           "relative flex h-9 w-9 items-center justify-center rounded-md transition-colors",
                           active
                             ? "bg-sidebar-primary/10 text-sidebar-primary"
-                            : "text-white/40 hover:bg-white/5 hover:text-white/80"
+                            : "text-sidebar-foreground/40 hover:bg-sidebar-foreground/5 hover:text-sidebar-foreground/80"
                         )}
                       >
                         {active && (
@@ -228,14 +228,14 @@ export function AppSidebar({
           onClick={() => signOut()}
           title="Sair"
           className={cn(
-            "flex items-center gap-2 rounded-md px-3 py-2 text-sm text-white/35 transition-colors hover:bg-red-500/10 hover:text-red-400",
+            "flex items-center gap-2 rounded-md px-3 py-2 text-sm text-sidebar-foreground/35 transition-colors hover:bg-red-500/10 hover:text-red-400",
             compact ? "h-9 w-9 justify-center" : "w-full"
           )}
         >
           <NavIcon name="log-out" className="size-4 shrink-0" />
           {!compact && <span>Sair</span>}
         </button>
-        <span className={cn("text-[10px] text-white/20", compact && "text-center")}>
+        <span className={cn("text-[10px] text-sidebar-foreground/20", compact && "text-center")}>
           v{compact ? APP_VERSION.slice(0, 3) : APP_VERSION}
         </span>
       </div>
@@ -262,7 +262,7 @@ export function AppMobileMenuButton({ onOpen }: { onOpen: () => void }) {
       type="button"
       onClick={onOpen}
       aria-label="Open menu"
-      className="fixed left-4 top-4 z-30 flex h-9 w-9 items-center justify-center rounded-md border border-sidebar-border bg-sidebar text-white/50 shadow-md transition-colors hover:text-white/90 md:hidden"
+      className="fixed left-4 top-4 z-30 flex h-9 w-9 items-center justify-center rounded-md border border-sidebar-border bg-sidebar text-sidebar-foreground/50 shadow-md transition-colors hover:text-sidebar-foreground/90 md:hidden"
     >
       <NavIconMenu className="size-4" />
     </button>

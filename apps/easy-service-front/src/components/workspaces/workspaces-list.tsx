@@ -270,7 +270,7 @@ export function WorkspacesList() {
                     return (
                       <tr
                         key={row.id ? `${row.id}-${index}` : `workspace-row-${index}`}
-                        className="group border-b border-border/40 last:border-0 hover:bg-white/[0.02]"
+                        className="group border-b border-border/40 last:border-0 hover:bg-foreground/[0.04]"
                       >
                         {/* Name */}
                         <td className="px-4 py-3">
@@ -326,7 +326,7 @@ export function WorkspacesList() {
                                 href={`/workspaces/${encodeURIComponent(row.id)}/edit`}
                                 title="Editar workspace"
                                 aria-label={`Editar workspace ${row.name}`}
-                                className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground"
+                                className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-foreground/5 hover:text-foreground"
                               >
                                 <PencilIcon />
                               </Link>
@@ -346,7 +346,7 @@ export function WorkspacesList() {
                                 href={`/workspaces/${encodeURIComponent(row.id)}/connect`}
                                 title="Conectar WhatsApp"
                                 aria-label={`Conectar WhatsApp ao workspace ${row.name}`}
-                                className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground"
+                                className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-foreground/5 hover:text-foreground"
                               >
                                 <PlugIcon />
                               </Link>
@@ -401,7 +401,7 @@ export function WorkspacesList() {
                 type="button"
                 disabled={loading || page <= 1}
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
-                className="inline-flex h-7 items-center rounded-md border border-border/60 bg-card px-3 text-xs font-medium text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
+                className="inline-flex h-7 items-center rounded-md border border-border/60 bg-card px-3 text-xs font-medium text-muted-foreground transition-colors hover:bg-foreground/5 hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
               >
                 Anterior
               </button>
@@ -409,7 +409,7 @@ export function WorkspacesList() {
                 type="button"
                 disabled={loading || page >= totalPages}
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                className="inline-flex h-7 items-center rounded-md border border-border/60 bg-card px-3 text-xs font-medium text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
+                className="inline-flex h-7 items-center rounded-md border border-border/60 bg-card px-3 text-xs font-medium text-muted-foreground transition-colors hover:bg-foreground/5 hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
               >
                 Próxima
               </button>
@@ -444,7 +444,7 @@ export function WorkspacesList() {
                 type="button"
                 onClick={() => setWorkspacePendingDelete(null)}
                 disabled={deleting}
-                className="flex-1 rounded-lg border border-border/60 px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-white/5 disabled:opacity-50 sm:flex-none"
+                className="flex-1 rounded-lg border border-border/60 px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-foreground/5 disabled:opacity-50 sm:flex-none"
               >
                 Cancelar
               </button>
