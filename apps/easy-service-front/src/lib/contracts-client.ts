@@ -10,6 +10,7 @@ export type ContractType = {
   label: string;
   description: string;
   href: string;
+  tag?: string;
 };
 
 export const CONTRACT_TYPES: ContractType[] = [
@@ -18,6 +19,7 @@ export const CONTRACT_TYPES: ContractType[] = [
     label: "Contrato Salário Maternidade",
     description: "Contrato para serviços de salário maternidade com dados pessoais e endereço.",
     href: "/contracts/maternity",
+    tag: "Thiago Ribeiro Evangelista",
   },
 ];
 

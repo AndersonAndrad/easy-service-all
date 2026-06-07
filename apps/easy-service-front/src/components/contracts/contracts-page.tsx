@@ -31,7 +31,14 @@ export function ContractsPage() {
                 <NavIconFileText className="size-5" />
               </div>
               <div className="flex flex-col gap-1">
-                <span className="font-medium leading-tight text-foreground">{contract.label}</span>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="font-medium leading-tight text-foreground">{contract.label}</span>
+                  {contract.tag && (
+                    <span className="rounded-full bg-sidebar-primary/10 px-2 py-0.5 text-[10px] font-medium text-sidebar-primary">
+                      {contract.tag}
+                    </span>
+                  )}
+                </div>
                 <span className="text-xs leading-snug text-muted-foreground/70">
                   {contract.description}
                 </span>
