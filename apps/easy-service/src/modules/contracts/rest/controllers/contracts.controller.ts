@@ -27,4 +27,17 @@ export class ContractsController {
     res.setHeader('Content-Length', pdf.length);
     res.send(pdf);
   }
+
+  @Post('maternity-we-core')
+  @RolesAllowed(Roles.ADMIN, Roles.SUPER_ADMIN)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Generate a WE CORE maternity contract PDF' })
+  @UsePipes(new ValidationPipe({ transform: true, whitelist: true, forbidNonWhitelisted: true }))
+  async generateMaternityWeCore(@Body() dto: MaternityContractDto, @Res() res: Response): Promise<void> {
+    const pdf = await this.contractsService.generateWeCoreMaternityContract(dto);
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename="maternity-we-core-contract.pdf"');
+    res.setHeader('Content-Length', pdf.length);
+    res.send(pdf);
+  }
 }

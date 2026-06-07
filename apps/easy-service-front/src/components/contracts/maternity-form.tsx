@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import type { MaternityContractData } from "@easy-service/shared";
 import { toast } from "@/components/toast/toaster";
 import { useAuth } from "@/contexts/auth-context";
-import { downloadBlob, generateMaternityContract } from "@/lib/contracts-client";
+import { downloadBlob, generateMaternityContract, generateWeCoreMaternityContract } from "@/lib/contracts-client";
 import { cn } from "@/lib/utils";
 
 const MARITAL_STATUS_OPTIONS: { value: string; label: string }[] = [
@@ -104,7 +104,21 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function MaternityForm() {
+const CONTRACT_GENERATORS = {
+  maternity: generateMaternityContract,
+  "maternity-we-core": generateWeCoreMaternityContract,
+} as const;
+
+type ContractVariant = keyof typeof CONTRACT_GENERATORS;
+
+type MaternityFormProps = {
+  title: string;
+  breadcrumbLabel: string;
+  contractVariant: ContractVariant;
+};
+
+export function MaternityForm({ title, breadcrumbLabel, contractVariant }: MaternityFormProps) {
+  const generateContract = CONTRACT_GENERATORS[contractVariant];
   const router = useRouter();
   const { accessToken } = useAuth();
 
@@ -154,7 +168,7 @@ export function MaternityForm() {
     if (!accessToken) return;
     setLoading(true);
     try {
-      const blob = await generateMaternityContract(accessToken, form);
+      const blob = await generateContract(accessToken, form);
       const filename = `CONTRATO E PROCURAÇÃO - ${form.fullName.toUpperCase()}.pdf`;
       downloadBlob(blob, filename);
       setGenerated(true);
@@ -179,9 +193,21 @@ export function MaternityForm() {
             Contratos
           </button>
           <span>/</span>
-          <span className="text-foreground/80">Salário Maternidade</span>
+          <span className="text-foreground/80">{breadcrumbLabel}</span>
         </div>
-        <h1 className="text-xl font-semibold text-foreground">Contrato Salário Maternidade</h1>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => router.push("/contracts")}
+            className="flex items-center justify-center rounded-lg border border-border/60 p-1.5 text-muted-foreground transition-colors hover:bg-muted/40 hover:text-foreground"
+            aria-label="Voltar"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M19 12H5M12 5l-7 7 7 7" />
+            </svg>
+          </button>
+          <h1 className="text-xl font-semibold text-foreground">{title}</h1>
+        </div>
         <p className="mt-0.5 text-xs text-muted-foreground/60">
           Preencha os dados abaixo para gerar o contrato em PDF.
         </p>

@@ -21,6 +21,13 @@ export const CONTRACT_TYPES: ContractType[] = [
     href: "/contracts/maternity",
     tag: "Thiago Ribeiro Evangelista",
   },
+  {
+    id: "maternity-we-core",
+    label: "Contrato Salário Maternidade",
+    description: "Contrato para serviços de salário maternidade — Agência WE CORE Assessoria Digital.",
+    href: "/contracts/maternity-we-core",
+    tag: "Agência WE CORE Assessoria Digital",
+  },
 ];
 
 export async function generateMaternityContract(
@@ -30,6 +37,22 @@ export async function generateMaternityContract(
   try {
     const res = await publicApiClient.post<ArrayBuffer>(
       `/contracts/maternity`,
+      body,
+      { ...authConfig(accessToken), responseType: "arraybuffer" }
+    );
+    return new Blob([res.data], { type: "application/pdf" });
+  } catch (error) {
+    throw new Error(await parseErrorMessage(error));
+  }
+}
+
+export async function generateWeCoreMaternityContract(
+  accessToken: string,
+  body: MaternityContractData
+): Promise<Blob> {
+  try {
+    const res = await publicApiClient.post<ArrayBuffer>(
+      `/contracts/maternity-we-core`,
       body,
       { ...authConfig(accessToken), responseType: "arraybuffer" }
     );
