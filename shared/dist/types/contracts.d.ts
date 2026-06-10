@@ -23,15 +23,15 @@ export interface ResidenceDeclarationData {
     fullName: string;
     maritalStatus: string;
     profession: string;
-    rg: string;
-    rgState: string;
     cpf: string;
     street: string;
-    streetNumber: string;
     neighborhood: string;
     city: string;
     state: string;
     postalCode: string;
+    rg?: string;
+    rgState?: string;
+    streetNumber?: string;
 }
 export type ContractType = "maternity" | "maternity-we-core" | "maternity-marcello" | "residence-declaration";
 //# sourceMappingURL=contracts.d.ts.map

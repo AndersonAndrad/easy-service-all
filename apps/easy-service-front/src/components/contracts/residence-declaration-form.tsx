@@ -16,19 +16,21 @@ const MARITAL_STATUS_OPTIONS = [
   { value: "União Estável", label: "União Estável" },
 ];
 
-const EMPTY_FORM: ResidenceDeclarationData = {
+type FormState = Required<ResidenceDeclarationData>;
+
+const EMPTY_FORM: FormState = {
   fullName: "",
   maritalStatus: "",
   profession: "",
-  rg: "",
-  rgState: "",
   cpf: "",
   street: "",
-  streetNumber: "",
   neighborhood: "",
   city: "",
   state: "",
   postalCode: "",
+  rg: "",
+  rgState: "",
+  streetNumber: "",
 };
 
 function maskCpf(digits: string): string {
@@ -117,7 +119,7 @@ export function ResidenceDeclarationForm() {
   const router = useRouter();
   const { accessToken } = useAuth();
 
-  const [form, setForm] = useState<ResidenceDeclarationData>(EMPTY_FORM);
+  const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [loading, setLoading] = useState(false);
   const [cepLoading, setCepLoading] = useState(false);
   const [generated, setGenerated] = useState(false);
@@ -158,7 +160,21 @@ export function ResidenceDeclarationForm() {
     if (!accessToken) return;
     setLoading(true);
     try {
-      const blob = await generateResidenceDeclarationContract(accessToken, form);
+      const payload: ResidenceDeclarationData = {
+        fullName: form.fullName,
+        maritalStatus: form.maritalStatus,
+        profession: form.profession,
+        cpf: form.cpf,
+        street: form.street,
+        neighborhood: form.neighborhood,
+        city: form.city,
+        state: form.state,
+        postalCode: form.postalCode,
+        ...(form.rg.trim() && { rg: form.rg }),
+        ...(form.rgState.trim() && { rgState: form.rgState }),
+        ...(form.streetNumber.trim() && { streetNumber: form.streetNumber }),
+      };
+      const blob = await generateResidenceDeclarationContract(accessToken, payload);
       const filename = `DECLARAÇÃO DE RESIDÊNCIA - ${form.fullName.toUpperCase()}.pdf`;
       downloadBlob(blob, filename);
       setGenerated(true);

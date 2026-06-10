@@ -5,15 +5,27 @@ const DATA: ResidenceDeclarationData = {
   fullName: 'Maria Silva Santos',
   maritalStatus: 'Solteiro(a)',
   profession: 'Professora',
-  rg: '1234567',
-  rgState: 'SP',
   cpf: '123.456.789-00',
   street: 'Rua das Flores',
-  streetNumber: '123',
   neighborhood: 'Centro',
   city: 'São Paulo',
   state: 'SP',
   postalCode: '12345-678',
+  rg: '1234567',
+  rgState: 'SP',
+  streetNumber: '123',
+};
+
+const DATA_WITHOUT_OPTIONAL: ResidenceDeclarationData = {
+  fullName: 'João Pereira',
+  maritalStatus: 'Casado(a)',
+  profession: 'Engenheiro',
+  cpf: '987.654.321-00',
+  street: 'Avenida Brasil',
+  neighborhood: 'Jardim América',
+  city: 'Curitiba',
+  state: 'PR',
+  postalCode: '80000-000',
 };
 
 describe('renderResidenceDeclarationTemplate', (): void => {
@@ -58,5 +70,37 @@ describe('renderResidenceDeclarationTemplate', (): void => {
 
   it('does not expose raw template literal placeholders', (): void => {
     expect(html).not.toContain('${');
+  });
+
+  describe('without optional fields', (): void => {
+    let htmlWithout: string;
+
+    beforeAll((): void => {
+      htmlWithout = renderResidenceDeclarationTemplate(DATA_WITHOUT_OPTIONAL);
+    });
+
+    it('renders without rg and rgState', (): void => {
+      expect(htmlWithout).not.toContain('RG nº');
+      expect(htmlWithout).not.toContain('SSP/');
+      expect(htmlWithout).toContain(DATA_WITHOUT_OPTIONAL.cpf);
+    });
+
+    it('renders without streetNumber', (): void => {
+      expect(htmlWithout).not.toContain('n°.');
+      expect(htmlWithout).toContain(DATA_WITHOUT_OPTIONAL.street);
+    });
+
+    it('renders required fields correctly', (): void => {
+      expect(htmlWithout).toContain(DATA_WITHOUT_OPTIONAL.fullName);
+      expect(htmlWithout).toContain(DATA_WITHOUT_OPTIONAL.maritalStatus);
+      expect(htmlWithout).toContain(DATA_WITHOUT_OPTIONAL.profession);
+      expect(htmlWithout).toContain(DATA_WITHOUT_OPTIONAL.neighborhood);
+      expect(htmlWithout).toContain(DATA_WITHOUT_OPTIONAL.city);
+      expect(htmlWithout).toContain(DATA_WITHOUT_OPTIONAL.postalCode);
+    });
+
+    it('does not expose raw template literal placeholders', (): void => {
+      expect(htmlWithout).not.toContain('${');
+    });
   });
 });

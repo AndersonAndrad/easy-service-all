@@ -1,5 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import type { ResidenceDeclarationData } from '@easy-service/shared';
 
 export class ResidenceDeclarationContractDto implements ResidenceDeclarationData {
@@ -18,16 +18,6 @@ export class ResidenceDeclarationContractDto implements ResidenceDeclarationData
   @IsNotEmpty()
   profession: string;
 
-  @ApiProperty({ example: '1234567' })
-  @IsString()
-  @IsNotEmpty()
-  rg: string;
-
-  @ApiProperty({ example: 'SP' })
-  @IsString()
-  @IsNotEmpty()
-  rgState: string;
-
   @ApiProperty({ example: '123.456.789-00' })
   @IsString()
   @IsNotEmpty()
@@ -37,11 +27,6 @@ export class ResidenceDeclarationContractDto implements ResidenceDeclarationData
   @IsString()
   @IsNotEmpty()
   street: string;
-
-  @ApiProperty({ example: '123' })
-  @IsString()
-  @IsNotEmpty()
-  streetNumber: string;
 
   @ApiProperty({ example: 'Centro' })
   @IsString()
@@ -62,4 +47,19 @@ export class ResidenceDeclarationContractDto implements ResidenceDeclarationData
   @IsString()
   @IsNotEmpty()
   postalCode: string;
+
+  @ApiPropertyOptional({ example: '1234567' })
+  @IsOptional()
+  @IsString()
+  rg?: string;
+
+  @ApiPropertyOptional({ example: 'SP' })
+  @IsOptional()
+  @IsString()
+  rgState?: string;
+
+  @ApiPropertyOptional({ example: '123' })
+  @IsOptional()
+  @IsString()
+  streetNumber?: string;
 }

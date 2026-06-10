@@ -62,9 +62,8 @@ export function renderResidenceDeclarationTemplate(data: ResidenceDeclarationDat
   <h1>Declaração de Residência</h1>
 
   <p class="body-text">
-    Eu, <strong>${data.fullName}</strong>, ${data.maritalStatus}, ${data.profession}, portador(a) do RG nº. ${data.rg},
-    SSP/${data.rgState}, CPF nº. ${data.cpf}, <strong>DECLARO</strong> para fins de comprovação de residência,
-    sob as penas da Lei (art. 1º e 2º da Lei nº 7.115/83) residir na ${data.street}, n°. ${data.streetNumber},
+    Eu, <strong>${data.fullName}</strong>, ${data.maritalStatus}, ${data.profession},${data.rg && data.rgState ? ` portador(a) do RG nº. ${data.rg}, SSP/${data.rgState},` : ''} CPF nº. ${data.cpf}, <strong>DECLARO</strong> para fins de comprovação de residência,
+    sob as penas da Lei (art. 1º e 2º da Lei nº 7.115/83) residir na ${data.street}${data.streetNumber ? `, n°. ${data.streetNumber}` : ''},
     Bairro ${data.neighborhood}, Município ${data.city}, CEP ${data.postalCode}. Estou ciente de que a
     falsidade na prestação destas informações me sujeitará às penalidades previstas no artigo 299 do
     Código Penal Brasileiro (Crime de Falsidade Ideológica), que prevê pena de reclusão de um a cinco
