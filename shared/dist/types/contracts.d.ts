@@ -19,5 +19,19 @@ export interface MaternityMarcelloContractData extends MaternityContractData {
     email?: string;
     phone?: string;
 }
-export type ContractType = "maternity" | "maternity-we-core" | "maternity-marcello";
+export interface ResidenceDeclarationData {
+    fullName: string;
+    maritalStatus: string;
+    profession: string;
+    rg: string;
+    rgState: string;
+    cpf: string;
+    street: string;
+    streetNumber: string;
+    neighborhood: string;
+    city: string;
+    state: string;
+    postalCode: string;
+}
+export type ContractType = "maternity" | "maternity-we-core" | "maternity-marcello" | "residence-declaration";
 //# sourceMappingURL=contracts.d.ts.map

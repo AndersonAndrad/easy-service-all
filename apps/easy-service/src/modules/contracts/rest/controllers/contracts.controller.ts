@@ -8,6 +8,7 @@ import { RolesGuard } from 'src/shared/guards/roles.guard';
 import { ContractsService } from '../../app/contracts.service';
 import { MaternityContractDto } from '../../types/dto/maternity-contract.dto';
 import { MaternityMarcelloContractDto } from '../../types/dto/maternity-marcello-contract.dto';
+import { ResidenceDeclarationContractDto } from '../../types/dto/residence-declaration-contract.dto';
 
 @ApiTags('contracts')
 @ApiBearerAuth()
@@ -51,6 +52,19 @@ export class ContractsController {
     const pdf = await this.contractsService.generateMarcelloMaternityContract(dto);
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', 'attachment; filename="maternity-marcello-contract.pdf"');
+    res.setHeader('Content-Length', pdf.length);
+    res.send(pdf);
+  }
+
+  @Post('residence-declaration')
+  @RolesAllowed(Roles.ADMIN, Roles.SUPER_ADMIN)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Generate a residence declaration PDF' })
+  @UsePipes(new ValidationPipe({ transform: true, whitelist: true, forbidNonWhitelisted: true }))
+  async generateResidenceDeclaration(@Body() dto: ResidenceDeclarationContractDto, @Res() res: Response): Promise<void> {
+    const pdf = await this.contractsService.generateResidenceDeclarationContract(dto);
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename="residence-declaration.pdf"');
     res.setHeader('Content-Length', pdf.length);
     res.send(pdf);
   }

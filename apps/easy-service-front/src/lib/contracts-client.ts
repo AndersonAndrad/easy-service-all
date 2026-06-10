@@ -1,9 +1,9 @@
 import { authConfig } from "@easy-service/shared";
-import type { MaternityContractData, MaternityMarcelloContractData } from "@easy-service/shared";
+import type { MaternityContractData, MaternityMarcelloContractData, ResidenceDeclarationData } from "@easy-service/shared";
 import { parseErrorMessage } from "@/lib/auth-client";
 import { publicApiClient } from "@/lib/http/public-api-client";
 
-export type { MaternityContractData, MaternityMarcelloContractData };
+export type { MaternityContractData, MaternityMarcelloContractData, ResidenceDeclarationData };
 
 export type ContractType = {
   id: string;
@@ -34,6 +34,12 @@ export const CONTRACT_TYPES: ContractType[] = [
     description: "Contrato para serviços de salário maternidade — Marcello Renault Sociedade Individual de Advocacia.",
     href: "/contracts/maternity-marcello",
     tag: "Marcello Renault",
+  },
+  {
+    id: "residence-declaration",
+    label: "Declaração de Residência",
+    description: "Declaração de residência para fins de comprovação de endereço.",
+    href: "/contracts/residence-declaration",
   },
 ];
 
@@ -76,6 +82,22 @@ export async function generateMarcelloMaternityContract(
   try {
     const res = await publicApiClient.post<ArrayBuffer>(
       `/contracts/maternity-marcello`,
+      body,
+      { ...authConfig(accessToken), responseType: "arraybuffer" }
+    );
+    return new Blob([res.data], { type: "application/pdf" });
+  } catch (error) {
+    throw new Error(await parseErrorMessage(error));
+  }
+}
+
+export async function generateResidenceDeclarationContract(
+  accessToken: string,
+  body: ResidenceDeclarationData
+): Promise<Blob> {
+  try {
+    const res = await publicApiClient.post<ArrayBuffer>(
+      `/contracts/residence-declaration`,
       body,
       { ...authConfig(accessToken), responseType: "arraybuffer" }
     );
