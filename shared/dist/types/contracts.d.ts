@@ -12,5 +12,12 @@ export interface MaternityContractData {
     guardianName?: string;
     guardianCpf?: string;
 }
-export type ContractType = "maternity";
+export interface MaternityMarcelloContractData extends MaternityContractData {
+    rg?: string;
+    rgState?: string;
+    streetNumber?: string;
+    email?: string;
+    phone?: string;
+}
+export type ContractType = "maternity" | "maternity-we-core" | "maternity-marcello";
 //# sourceMappingURL=contracts.d.ts.map

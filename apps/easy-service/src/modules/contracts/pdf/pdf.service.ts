@@ -6,6 +6,30 @@ export class PdfService {
   private readonly logger = new Logger(PdfService.name);
 
   async generateFromHtml(html: string): Promise<Buffer> {
+    return this.renderPdf(html, {});
+  }
+
+  async generateFromHtmlWithLayout(
+    html: string,
+    layout: {
+      headerTemplate?: string;
+      footerTemplate?: string;
+      marginTop?: string;
+      marginBottom?: string;
+    },
+  ): Promise<Buffer> {
+    return this.renderPdf(html, layout);
+  }
+
+  private async renderPdf(
+    html: string,
+    layout: {
+      headerTemplate?: string;
+      footerTemplate?: string;
+      marginTop?: string;
+      marginBottom?: string;
+    },
+  ): Promise<Buffer> {
     let browser: Awaited<ReturnType<typeof puppeteer.launch>> | null = null;
     try {
       browser = await puppeteer.launch({
@@ -17,7 +41,15 @@ export class PdfService {
       const pdf = await page.pdf({
         format: 'A4',
         printBackground: true,
-        margin: { top: '0', right: '0', bottom: '0', left: '0' },
+        displayHeaderFooter: !!(layout.headerTemplate ?? layout.footerTemplate),
+        headerTemplate: layout.headerTemplate ?? '<span></span>',
+        footerTemplate: layout.footerTemplate ?? '<span></span>',
+        margin: {
+          top: layout.marginTop ?? '0',
+          right: '0',
+          bottom: layout.marginBottom ?? '0',
+          left: '0',
+        },
       });
       return Buffer.from(pdf);
     } catch (err) {

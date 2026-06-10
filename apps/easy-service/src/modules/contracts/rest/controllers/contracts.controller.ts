@@ -7,6 +7,7 @@ import { RolesAllowed } from 'src/shared/guards/roles.decorator';
 import { RolesGuard } from 'src/shared/guards/roles.guard';
 import { ContractsService } from '../../app/contracts.service';
 import { MaternityContractDto } from '../../types/dto/maternity-contract.dto';
+import { MaternityMarcelloContractDto } from '../../types/dto/maternity-marcello-contract.dto';
 
 @ApiTags('contracts')
 @ApiBearerAuth()
@@ -37,6 +38,19 @@ export class ContractsController {
     const pdf = await this.contractsService.generateWeCoreMaternityContract(dto);
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', 'attachment; filename="maternity-we-core-contract.pdf"');
+    res.setHeader('Content-Length', pdf.length);
+    res.send(pdf);
+  }
+
+  @Post('maternity-marcello')
+  @RolesAllowed(Roles.ADMIN, Roles.SUPER_ADMIN)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Generate a Marcello Renault maternity contract PDF' })
+  @UsePipes(new ValidationPipe({ transform: true, whitelist: true, forbidNonWhitelisted: true }))
+  async generateMaternityMarcello(@Body() dto: MaternityMarcelloContractDto, @Res() res: Response): Promise<void> {
+    const pdf = await this.contractsService.generateMarcelloMaternityContract(dto);
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename="maternity-marcello-contract.pdf"');
     res.setHeader('Content-Length', pdf.length);
     res.send(pdf);
   }
