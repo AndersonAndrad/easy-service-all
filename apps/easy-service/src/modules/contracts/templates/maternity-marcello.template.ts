@@ -43,9 +43,9 @@ export type MarcelloTemplateResult = {
 };
 
 export function renderMaternityMarcelloTemplate(data: MaternityMarcelloContractData): MarcelloTemplateResult {
-  const topoSrc = readImageAsDataUri('docs/contracts/new-contracts/topo-marcelo.jpg');
-  const bottomSrc = readImageAsDataUri('docs/contracts/new-contracts/bottom-marcelo.jpg');
-  const watermarkSrc = readImageAsDataUri('docs/contracts/new-contracts/marcelo-dgua.jpg');
+  const topoSrc = readImageAsDataUri('docs/images/topo-marcelo.jpg');
+  const bottomSrc = readImageAsDataUri('docs/images/bottom-marcelo.jpg');
+  const watermarkSrc = readImageAsDataUri('docs/images/marcelo-dgua.jpg');
 
   const today = new Date().toLocaleDateString('pt-BR', {
     day: '2-digit',
