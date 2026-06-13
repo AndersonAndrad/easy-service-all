@@ -50,8 +50,9 @@ export class ContractsController {
   @UsePipes(new ValidationPipe({ transform: true, whitelist: true, forbidNonWhitelisted: true }))
   async generateMaternityMarcello(@Body() dto: MaternityMarcelloContractDto, @Res() res: Response): Promise<void> {
     const pdf = await this.contractsService.generateMarcelloMaternityContract(dto);
+    const encodedFilename = encodeURIComponent(`contrato e procuração - ${dto.fullName}.pdf`);
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', 'attachment; filename="maternity-marcello-contract.pdf"');
+    res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodedFilename}`);
     res.setHeader('Content-Length', pdf.length);
     res.send(pdf);
   }

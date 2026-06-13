@@ -24,14 +24,14 @@ function buildPersonBlock(data: MaternityMarcelloContractData): string {
   const phonePart = data.phone ? `, Cel/Whatsapp: ${data.phone}` : '';
 
   if (data.isMinor) {
-    return `${data.fullName}, brasileiro(a), menor relativamente incapaz, ${data.profession}${rgPart},
+    return `${data.fullName}, menor relativamente incapaz, ${data.profession}${rgPart},
   inscrito(a) no CPF nº ${data.cpf}, residente e domiciliado(a) na ${data.street}${numberPart},
   Bairro ${data.neighborhood}, CEP: ${data.postalCode}${emailPart}${phonePart}, ${data.city}/${data.state},
-  neste ato assistido(a) por seu responsável legal ${data.guardianName ?? ''}, brasileiro(a),
+  neste ato assistido(a) por seu responsável legal ${data.guardianName ?? ''},
   inscrito(a) no CPF nº ${data.guardianCpf ?? ''}, residente e domiciliado(a) no mesmo endereço.`;
   }
 
-  return `${data.fullName}, brasileiro(a), maior, Estado Civil ${data.maritalStatus}, ${data.profession}${rgPart},
+  return `${data.fullName}, maior, Estado Civil ${data.maritalStatus}, ${data.profession}${rgPart},
   inscrito(a) no CPF nº ${data.cpf}, residente e domiciliado(a) na ${data.street}${numberPart},
   Bairro ${data.neighborhood}, CEP: ${data.postalCode}${emailPart}${phonePart}, ${data.city}/${data.state}.`;
 }
@@ -157,19 +157,6 @@ export function renderMaternityMarcelloTemplate(data: MaternityMarcelloContractD
       padding-top: 4px;
       margin-top: 22px;
       font-size: 9pt;
-    }
-
-    .sig-witnesses {
-      display: flex;
-      gap: 30px;
-      margin-top: 28px;
-      background: white;
-      position: relative;
-      z-index: 1;
-    }
-    .sig-witnesses .sig {
-      min-width: 70mm;
-      text-align: center;
     }
 
     .date-line {
@@ -429,8 +416,7 @@ export function renderMaternityMarcelloTemplate(data: MaternityMarcelloContractD
       <span class="label">12ª Cláusula:</span> Fica eleito o Foro desta Comarca, como competente para qualquer ação judicial oriunda do
       presente contrato, ainda que diversos seja, ou venha a ser o da Contratante ou do Contratado.<br/><br/>
       Este instrumento contratual obriga aos seus contratantes e sucessores a qualquer título.<br/><br/>
-      E por estarem assim justos e contratados, contratante e Contratado assinam o presente, juntamente com as
-      testemunhas, em duas vias de igual teor e forma.
+      E por estarem assim justos e contratados, contratante e Contratado assinam o presente em duas vias de igual teor e forma.
     </div>
 
     <div class="date-line">${dateLine}.</div>
@@ -455,15 +441,6 @@ export function renderMaternityMarcelloTemplate(data: MaternityMarcelloContractD
       </div>
     </div>
 
-    <!-- Testemunhas: left-aligned, not full width -->
-    <div class="sig-witnesses">
-      <div class="sig">
-        <div class="sig-line">Testemunha 1</div>
-      </div>
-      <div class="sig">
-        <div class="sig-line">Testemunha 2</div>
-      </div>
-    </div>
   </div>
 
 </body>
