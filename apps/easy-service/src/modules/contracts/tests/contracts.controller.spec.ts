@@ -1,5 +1,5 @@
 import { Test, type TestingModule } from '@nestjs/testing';
-import type { MaternityContractData, ResidenceDeclarationData } from '@easy-service/shared';
+import type { AccidentAssistanceFormData, MaternityContractData, ResidenceDeclarationData } from '@easy-service/shared';
 import { JwtAuthGuard } from 'src/shared/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/shared/guards/roles.guard';
 import { WorkspaceAccessGuard } from 'src/shared/guards/workspace-access.guard';
@@ -11,9 +11,10 @@ const PDF_BUFFER = Buffer.from('%PDF-1.4 test');
 const mockContractsService = {
   generateMaternityContract: jest.fn().mockResolvedValue(PDF_BUFFER),
   generateResidenceDeclarationContract: jest.fn().mockResolvedValue(PDF_BUFFER),
+  generateAccidentAssistanceForm: jest.fn().mockResolvedValue(PDF_BUFFER),
 };
 
-function makeRes() {
+function makeRes(): { setHeader: jest.Mock; send: jest.Mock } {
   const res = {
     setHeader: jest.fn(),
     send: jest.fn(),
@@ -30,6 +31,7 @@ const DTO: MaternityContractData = {
   neighborhood: 'Vila Nova',
   postalCode: '98765-432',
   city: 'Rio de Janeiro',
+  state: 'RJ',
 };
 
 describe('ContractsController', (): void => {
@@ -53,37 +55,37 @@ describe('ContractsController', (): void => {
   });
 
   describe('generateMaternity', (): void => {
-    it('calls service with dto and workspaceId', async (): Promise<void> => {
+    it('calls service with dto', async (): Promise<void> => {
       const res = makeRes();
-      await controller.generateMaternity('ws-abc', DTO as never, res as never);
+      await controller.generateMaternity(DTO as never, res as never);
 
-      expect(mockContractsService.generateMaternityContract).toHaveBeenCalledWith(DTO, 'ws-abc');
+      expect(mockContractsService.generateMaternityContract).toHaveBeenCalledWith(DTO);
     });
 
     it('sets Content-Type to application/pdf', async (): Promise<void> => {
       const res = makeRes();
-      await controller.generateMaternity('ws-abc', DTO as never, res as never);
+      await controller.generateMaternity(DTO as never, res as never);
 
       expect(res.setHeader).toHaveBeenCalledWith('Content-Type', 'application/pdf');
     });
 
     it('sets Content-Disposition as attachment with filename', async (): Promise<void> => {
       const res = makeRes();
-      await controller.generateMaternity('ws-abc', DTO as never, res as never);
+      await controller.generateMaternity(DTO as never, res as never);
 
       expect(res.setHeader).toHaveBeenCalledWith('Content-Disposition', 'attachment; filename="maternity-contract.pdf"');
     });
 
     it('sets Content-Length equal to buffer length', async (): Promise<void> => {
       const res = makeRes();
-      await controller.generateMaternity('ws-abc', DTO as never, res as never);
+      await controller.generateMaternity(DTO as never, res as never);
 
       expect(res.setHeader).toHaveBeenCalledWith('Content-Length', PDF_BUFFER.length);
     });
 
     it('sends the PDF buffer', async (): Promise<void> => {
       const res = makeRes();
-      await controller.generateMaternity('ws-abc', DTO as never, res as never);
+      await controller.generateMaternity(DTO as never, res as never);
 
       expect(res.send).toHaveBeenCalledWith(PDF_BUFFER);
     });
@@ -92,7 +94,7 @@ describe('ContractsController', (): void => {
       mockContractsService.generateMaternityContract.mockRejectedValueOnce(new Error('generation failed'));
       const res = makeRes();
 
-      await expect(controller.generateMaternity('ws-abc', DTO as never, res as never)).rejects.toThrow('generation failed');
+      await expect(controller.generateMaternity(DTO as never, res as never)).rejects.toThrow('generation failed');
     });
   });
 
@@ -152,6 +154,32 @@ describe('ContractsController', (): void => {
       const res = makeRes();
 
       await expect(controller.generateResidenceDeclaration(RESIDENCE_DTO as never, res as never)).rejects.toThrow('generation failed');
+    });
+  });
+
+  describe('generateAccidentAssistanceForm', (): void => {
+    const FORM_DTO: AccidentAssistanceFormData = {
+      fullName: 'Maria Silva',
+      cpf: '111.222.333-44',
+      postalCode: '69309-089',
+      street: 'Rua A',
+      streetNumber: '10',
+      neighborhood: 'Centro',
+      city: 'Boa Vista',
+      state: 'RR',
+      phone: '(95) 99999-9999',
+      accidentType: 'Doença do Trabalho (91)',
+      receivedSicknessBenefit: false,
+      caseDescription: 'Caso em análise.',
+    };
+
+    it('returns the generated PDF with the person name in the filename', async (): Promise<void> => {
+      const res = makeRes();
+      await controller.generateAccidentAssistanceForm(FORM_DTO as never, res as never);
+
+      expect(mockContractsService.generateAccidentAssistanceForm).toHaveBeenCalledWith(FORM_DTO);
+      expect(res.setHeader).toHaveBeenCalledWith('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent('ficha_auxilio_acidente_Maria Silva.pdf')}`);
+      expect(res.send).toHaveBeenCalledWith(PDF_BUFFER);
     });
   });
 });

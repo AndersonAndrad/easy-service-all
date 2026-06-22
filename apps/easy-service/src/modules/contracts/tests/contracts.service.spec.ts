@@ -1,5 +1,5 @@
 import { ForbiddenException } from '@nestjs/common';
-import type { MaternityContractData, ResidenceDeclarationData } from '@easy-service/shared';
+import type { AccidentAssistanceFormData, MaternityContractData, ResidenceDeclarationData } from '@easy-service/shared';
 import { Roles } from 'src/shared/enums/roles.enum';
 import { ContractsService } from '../app/contracts.service';
 
@@ -10,8 +10,10 @@ const mockPdfService = {
   generateFromHtmlWithLayout: jest.fn().mockResolvedValue(PDF_BUFFER),
 };
 
-function makeAuthContext(roles: Roles[] = [Roles.ADMIN]) {
-  return { getAuthContext: jest.fn().mockReturnValue({ userId: 'user-1', roles }) };
+function makeAuthContext(roles: Roles[] = [Roles.ADMIN]): { getAuthContext: jest.Mock } {
+  return {
+    getAuthContext: jest.fn().mockReturnValue({ userId: 'user-1', roles }),
+  };
 }
 
 const DATA: MaternityContractData = {
@@ -23,6 +25,7 @@ const DATA: MaternityContractData = {
   neighborhood: 'Jardim',
   postalCode: '00000-000',
   city: 'Campinas',
+  state: 'SP',
 };
 
 describe('ContractsService', (): void => {
@@ -37,7 +40,7 @@ describe('ContractsService', (): void => {
 
   describe('generateMaternityContract', (): void => {
     it('returns PDF buffer for ADMIN role', async (): Promise<void> => {
-      const result = await service.generateMaternityContract(DATA, 'ws-1');
+      const result = await service.generateMaternityContract(DATA);
 
       expect(result).toBe(PDF_BUFFER);
       expect(mockPdfService.generateFromHtml).toHaveBeenCalledTimes(1);
@@ -47,7 +50,7 @@ describe('ContractsService', (): void => {
       authContext = makeAuthContext([Roles.SUPER_ADMIN]);
       service = new ContractsService(mockPdfService as never, authContext as never);
 
-      const result = await service.generateMaternityContract(DATA, 'ws-2');
+      const result = await service.generateMaternityContract(DATA);
       expect(result).toBe(PDF_BUFFER);
     });
 
@@ -55,24 +58,23 @@ describe('ContractsService', (): void => {
       authContext = makeAuthContext([]);
       service = new ContractsService(mockPdfService as never, authContext as never);
 
-      await expect(service.generateMaternityContract(DATA, 'ws-1')).rejects.toThrow(ForbiddenException);
+      await expect(service.generateMaternityContract(DATA)).rejects.toThrow(ForbiddenException);
       expect(mockPdfService.generateFromHtml).not.toHaveBeenCalled();
     });
 
     it('passes HTML containing all contract data to PdfService', async (): Promise<void> => {
-      await service.generateMaternityContract(DATA, 'ws-3');
+      await service.generateMaternityContract(DATA);
 
       const [html] = mockPdfService.generateFromHtml.mock.calls[0] as [string];
       expect(html).toContain(DATA.fullName);
       expect(html).toContain(DATA.cpf);
       expect(html).toContain(DATA.city);
-      expect(html).toContain('ws-3');
     });
 
     it('propagates errors from PdfService', async (): Promise<void> => {
       mockPdfService.generateFromHtml.mockRejectedValueOnce(new Error('pdf failed'));
 
-      await expect(service.generateMaternityContract(DATA, 'ws-1')).rejects.toThrow('pdf failed');
+      await expect(service.generateMaternityContract(DATA)).rejects.toThrow('pdf failed');
     });
   });
 
@@ -129,6 +131,38 @@ describe('ContractsService', (): void => {
       mockPdfService.generateFromHtml.mockRejectedValueOnce(new Error('pdf failed'));
 
       await expect(service.generateResidenceDeclarationContract(RESIDENCE_DATA)).rejects.toThrow('pdf failed');
+    });
+  });
+
+  describe('generateAccidentAssistanceForm', (): void => {
+    const FORM_DATA: AccidentAssistanceFormData = {
+      fullName: 'Maria Silva',
+      cpf: '111.222.333-44',
+      postalCode: '69309-089',
+      street: 'Rua A',
+      streetNumber: '10',
+      neighborhood: 'Centro',
+      city: 'Boa Vista',
+      state: 'RR',
+      phone: '(95) 99999-9999',
+      accidentType: 'Qualquer natureza (31)',
+      receivedSicknessBenefit: false,
+      caseDescription: 'Caso em análise.',
+    };
+
+    it('generates a PDF containing the form data for an admin', async (): Promise<void> => {
+      const result = await service.generateAccidentAssistanceForm(FORM_DATA);
+
+      expect(result).toBe(PDF_BUFFER);
+      const [html] = mockPdfService.generateFromHtml.mock.calls[0] as [string];
+      expect(html).toContain(FORM_DATA.fullName);
+      expect(html).toContain(FORM_DATA.accidentType);
+    });
+
+    it('rejects callers without an admin role', async (): Promise<void> => {
+      service = new ContractsService(mockPdfService as never, makeAuthContext([]) as never);
+
+      await expect(service.generateAccidentAssistanceForm(FORM_DATA)).rejects.toThrow(ForbiddenException);
     });
   });
 });

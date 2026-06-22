@@ -9,6 +9,7 @@ export * from "./types/workspace";
 
 // Utils
 export * from "./utils/date";
+export * from "./utils/form-text";
 export * from "./utils/http";
 export * from "./utils/phone";
 export * from "./utils/pick";

@@ -33,5 +33,24 @@ export interface ResidenceDeclarationData {
     rgState?: string;
     streetNumber?: string;
 }
-export type ContractType = "maternity" | "maternity-we-core" | "maternity-marcello" | "residence-declaration";
+export declare const ACCIDENT_TYPES: readonly ["Qualquer natureza (31)", "Acidente de Trabalho (91)", "Doença do Trabalho (91)"];
+export type AccidentType = (typeof ACCIDENT_TYPES)[number];
+export interface AccidentAssistanceFormData {
+    fullName: string;
+    cpf: string;
+    postalCode: string;
+    street: string;
+    streetNumber: string;
+    complement?: string;
+    neighborhood: string;
+    city: string;
+    state: string;
+    phone: string;
+    secondaryPhone?: string;
+    accidentType: AccidentType;
+    receivedSicknessBenefit: boolean;
+    sicknessBenefitEndDate?: string;
+    caseDescription: string;
+}
+export type ContractType = "maternity" | "maternity-we-core" | "maternity-marcello" | "residence-declaration" | "accident-assistance-form";
 //# sourceMappingURL=contracts.d.ts.map

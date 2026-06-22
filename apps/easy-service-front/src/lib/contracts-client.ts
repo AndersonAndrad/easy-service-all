@@ -1,9 +1,9 @@
 import { authConfig } from "@easy-service/shared";
-import type { MaternityContractData, MaternityMarcelloContractData, ResidenceDeclarationData } from "@easy-service/shared";
+import type { AccidentAssistanceFormData, MaternityContractData, MaternityMarcelloContractData, ResidenceDeclarationData } from "@easy-service/shared";
 import { parseErrorMessage } from "@/lib/auth-client";
 import { publicApiClient } from "@/lib/http/public-api-client";
 
-export type { MaternityContractData, MaternityMarcelloContractData, ResidenceDeclarationData };
+export type { AccidentAssistanceFormData, MaternityContractData, MaternityMarcelloContractData, ResidenceDeclarationData };
 
 export type ContractType = {
   id: string;
@@ -14,6 +14,12 @@ export type ContractType = {
 };
 
 export const CONTRACT_TYPES: ContractType[] = [
+  {
+    id: "accident-assistance-form",
+    label: "Ficha atendimento auxílio acidente",
+    description: "Ficha de atendimento para análise de auxílio-acidente.",
+    href: "/contracts/accident-assistance-form",
+  },
   {
     id: "maternity",
     label: "Contrato Salário Maternidade",
@@ -42,6 +48,22 @@ export const CONTRACT_TYPES: ContractType[] = [
     href: "/contracts/residence-declaration",
   },
 ];
+
+export async function generateAccidentAssistanceForm(
+  accessToken: string,
+  body: AccidentAssistanceFormData
+): Promise<Blob> {
+  try {
+    const res = await publicApiClient.post<ArrayBuffer>(
+      "/contracts/accident-assistance-form",
+      body,
+      { ...authConfig(accessToken), responseType: "arraybuffer" }
+    );
+    return new Blob([res.data], { type: "application/pdf" });
+  } catch (error) {
+    throw new Error(await parseErrorMessage(error));
+  }
+}
 
 export async function generateMaternityContract(
   accessToken: string,

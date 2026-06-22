@@ -24,6 +24,7 @@ __exportStar(require("./types/roles"), exports);
 __exportStar(require("./types/workspace"), exports);
 // Utils
 __exportStar(require("./utils/date"), exports);
+__exportStar(require("./utils/form-text"), exports);
 __exportStar(require("./utils/http"), exports);
 __exportStar(require("./utils/phone"), exports);
 __exportStar(require("./utils/pick"), exports);
