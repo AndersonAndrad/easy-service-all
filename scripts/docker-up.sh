@@ -84,6 +84,29 @@ send_telegram_deploy_notification() {
 }
 
 # ---------------------------------------------------------------------------
+# Load env — reads key=value lines, handles values with spaces
+# ---------------------------------------------------------------------------
+load_env() {
+  local file="$1"
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    [[ "$line" =~ ^[[:space:]]*(#|$) ]] && continue
+    local key="${line%%=*}"
+    local val="${line#*=}"
+    key="${key#"${key%%[![:space:]]*}"}"
+    key="${key%"${key##*[![:space:]]}"}"
+    [[ -z "$key" ]] && continue
+    export "$key=$val"
+  done < "$file"
+}
+
+if [[ -f "$REPO_ROOT/apps/easy-service/.env" ]]; then
+  echo "==> Loading env from apps/easy-service/.env..."
+  load_env "$REPO_ROOT/apps/easy-service/.env"
+else
+  echo "WARNING: apps/easy-service/.env not found. Using existing environment variables."
+fi
+
+# ---------------------------------------------------------------------------
 # --stop: kill any running tunnels started by this script
 # ---------------------------------------------------------------------------
 if [[ "${1:-}" == "--stop" ]]; then
@@ -221,3 +244,25 @@ echo ""
 echo "To stop the tunnels:  ./scripts/docker-up.sh --stop"
 echo "To stop everything:   docker compose down && ./scripts/docker-up.sh --stop"
 echo ""
+
+# ---------------------------------------------------------------------------
+# Telegram notification
+# ---------------------------------------------------------------------------
+if [[ -n "${TELEGRAM_BOT_TOKEN:-}" && -n "${TELEGRAM_CHAT_ID:-}" ]]; then
+  echo "==> Sending Telegram notification..."
+  telegram_msg="🚀 *Easy Service — Deploy concluído!*
+
+⚙️ *Backend*
+  └ $(echo "$backend_url")
+
+🌐 *Frontend*
+  └ $(echo "$frontend_url")"
+
+  curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+    --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
+    --data-urlencode "text=${telegram_msg}" \
+    --data-urlencode "parse_mode=Markdown" \
+    > /dev/null && echo "    Message sent!" || echo "    WARNING: failed to send Telegram message."
+else
+  echo "WARNING: TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID not set — notification skipped."
+fi
