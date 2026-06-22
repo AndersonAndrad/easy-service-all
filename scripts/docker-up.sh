@@ -21,6 +21,10 @@
 #   FRONTEND_PORT      — port the frontend container exposes on the host (default: 3000)
 #   BACKEND_READY_SEC  — max seconds to wait for backend readiness (default: 90)
 #   FRONTEND_READY_SEC — max seconds to wait for frontend readiness (default: 60)
+#   TELEGRAM_BOT_TOKEN — Telegram bot token used for the deploy notification
+#   TELEGRAM_CHAT_ID   — Telegram chat/group ID that receives the notification
+#
+# Telegram variables can also be defined in the repository root .env file.
 
 set -euo pipefail
 
@@ -33,6 +37,51 @@ FRONTEND_READY_SEC="${FRONTEND_READY_SEC:-60}"
 PID_FILE="$REPO_ROOT/.cloudflared.pids"
 BACKEND_LOG="$REPO_ROOT/.cloudflared-backend.log"
 FRONTEND_LOG="$REPO_ROOT/.cloudflared-frontend.log"
+
+# Read a single value from the root dotenv file without sourcing unrelated
+# settings as shell code. An exported environment variable takes precedence.
+read_dotenv_value() {
+  local key="$1" line value
+  [[ -f "$REPO_ROOT/.env" ]] || return 0
+
+  line=$(grep -m 1 -E "^[[:space:]]*${key}=" "$REPO_ROOT/.env" 2>/dev/null) || true
+  [[ -n "$line" ]] || return 0
+
+  value="${line#*=}"
+  value="${value%$'\r'}"
+  if [[ "$value" == \"*\" && "$value" == *\" ]]; then
+    value="${value:1:${#value}-2}"
+  elif [[ "$value" == \'*\' && "$value" == *\' ]]; then
+    value="${value:1:${#value}-2}"
+  fi
+  printf '%s' "$value"
+}
+
+TELEGRAM_BOT_TOKEN="${TELEGRAM_BOT_TOKEN:-$(read_dotenv_value TELEGRAM_BOT_TOKEN)}"
+TELEGRAM_CHAT_ID="${TELEGRAM_CHAT_ID:-$(read_dotenv_value TELEGRAM_CHAT_ID)}"
+
+send_telegram_deploy_notification() {
+  local backend_url="$1" frontend_url="$2" message
+
+  if [[ -z "$TELEGRAM_BOT_TOKEN" || -z "$TELEGRAM_CHAT_ID" ]]; then
+    echo "WARNING: Telegram notification skipped. Set TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID."
+    return 0
+  fi
+
+  message=$(printf 'Deploy easy service all success\n\nAPI: %s\nFront: %s' \
+    "$backend_url" "$frontend_url")
+
+  echo "==> Sending deploy notification to Telegram..."
+  if curl --fail --silent --show-error --retry 3 \
+    --output /dev/null \
+    --request POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+    --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
+    --data-urlencode "text=${message}"; then
+    echo "    Telegram notification sent."
+  else
+    echo "WARNING: Deploy succeeded, but the Telegram notification could not be sent." >&2
+  fi
+}
 
 # ---------------------------------------------------------------------------
 # --stop: kill any running tunnels started by this script
@@ -162,6 +211,8 @@ echo "  Backend  (tunnel): $backend_url"
 echo "  Frontend (local) : http://localhost:$FRONTEND_PORT"
 echo "  Frontend (tunnel): $frontend_url"
 echo "======================================================"
+echo ""
+send_telegram_deploy_notification "$backend_url" "$frontend_url"
 echo ""
 echo "Tunnels are running in the background (PIDs saved in .cloudflared.pids)."
 echo "Logs: $BACKEND_LOG"
