@@ -1,5 +1,5 @@
 import { Test, type TestingModule } from '@nestjs/testing';
-import type { AccidentAssistanceFormData, MaternityContractData, ResidenceDeclarationData } from '@easy-service/shared';
+import type { AccidentAssistanceFormData, ClevesContractData, MaternityContractData, ResidenceDeclarationData } from '@easy-service/shared';
 import { JwtAuthGuard } from 'src/shared/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/shared/guards/roles.guard';
 import { WorkspaceAccessGuard } from 'src/shared/guards/workspace-access.guard';
@@ -12,6 +12,7 @@ const mockContractsService = {
   generateMaternityContract: jest.fn().mockResolvedValue(PDF_BUFFER),
   generateResidenceDeclarationContract: jest.fn().mockResolvedValue(PDF_BUFFER),
   generateAccidentAssistanceForm: jest.fn().mockResolvedValue(PDF_BUFFER),
+  generateClevesContract: jest.fn().mockResolvedValue(PDF_BUFFER),
 };
 
 function makeRes(): { setHeader: jest.Mock; send: jest.Mock } {
@@ -179,6 +180,34 @@ describe('ContractsController', (): void => {
 
       expect(mockContractsService.generateAccidentAssistanceForm).toHaveBeenCalledWith(FORM_DTO);
       expect(res.setHeader).toHaveBeenCalledWith('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent('ficha_auxilio_acidente_Maria Silva.pdf')}`);
+      expect(res.send).toHaveBeenCalledWith(PDF_BUFFER);
+    });
+  });
+
+  describe('generateCleves', (): void => {
+    const CLEVES_DTO: ClevesContractData = {
+      fullName: 'JAMIL DA SILVA PINTO',
+      nationality: 'brasileiro',
+      maritalStatus: 'casado',
+      profession: 'porteiro predial',
+      cpf: '874.240.109-72',
+      street: 'Rua Heitor Busato',
+      streetNumber: '99',
+      neighborhood: 'São Gabriel',
+      postalCode: '83.407-060',
+      city: 'COLOMBO',
+      state: 'PR',
+    };
+
+    it('calls service with dto and returns PDF with person name in filename', async (): Promise<void> => {
+      const res = makeRes();
+      await controller.generateCleves(CLEVES_DTO as never, res as never);
+
+      expect(mockContractsService.generateClevesContract).toHaveBeenCalledWith(CLEVES_DTO);
+      expect(res.setHeader).toHaveBeenCalledWith(
+        'Content-Disposition',
+        `attachment; filename*=UTF-8''${encodeURIComponent('auxilio_acidente_JAMIL DA SILVA PINTO.pdf')}`,
+      );
       expect(res.send).toHaveBeenCalledWith(PDF_BUFFER);
     });
   });

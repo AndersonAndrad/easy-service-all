@@ -62,9 +62,24 @@ export interface AccidentAssistanceFormData {
   caseDescription: string;
 }
 
+export interface ClevesContractData {
+  fullName: string;
+  nationality: string;
+  maritalStatus: string;
+  profession: string;
+  cpf: string;
+  street: string;
+  streetNumber: string;
+  neighborhood: string;
+  postalCode: string;
+  city: string;
+  state: string;
+}
+
 export type ContractType =
   | "maternity"
   | "maternity-we-core"
   | "maternity-marcello"
   | "residence-declaration"
-  | "accident-assistance-form";
+  | "accident-assistance-form"
+  | "cleves";

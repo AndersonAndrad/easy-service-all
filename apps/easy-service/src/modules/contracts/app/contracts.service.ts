@@ -1,5 +1,5 @@
 import { ForbiddenException, Injectable, Scope } from '@nestjs/common';
-import type { AccidentAssistanceFormData, MaternityContractData, MaternityMarcelloContractData, ResidenceDeclarationData } from '@easy-service/shared';
+import type { AccidentAssistanceFormData, ClevesContractData, MaternityContractData, MaternityMarcelloContractData, ResidenceDeclarationData } from '@easy-service/shared';
 import { Roles } from 'src/shared/enums/roles.enum';
 import { CurrentAuthContextProvider } from 'src/shared/guards/current-auth-context.provider';
 import { PdfService } from '../pdf/pdf.service';
@@ -8,6 +8,7 @@ import { renderMaternityWeCoreTemplate } from '../templates/maternity-we-core.te
 import { renderMaternityMarcelloTemplate } from '../templates/maternity-marcello.template';
 import { renderResidenceDeclarationTemplate } from '../templates/residence-declaration.template';
 import { renderAccidentAssistanceFormTemplate } from '../templates/accident-assistance-form.template';
+import { renderClevesTemplate } from '../templates/cleves.template';
 
 type AuthContext = { userId: string; roles: Roles[] };
 
@@ -69,5 +70,16 @@ export class ContractsService {
 
     const html = renderAccidentAssistanceFormTemplate(data);
     return this.pdfService.generateFromHtml(html);
+  }
+
+  async generateClevesContract(data: ClevesContractData): Promise<Buffer> {
+    const auth = this.getAuth();
+    if (!this.hasAdminRole(auth.roles)) throw new ForbiddenException('Insufficient roles');
+
+    const { html, footerTemplate } = renderClevesTemplate(data);
+    return this.pdfService.generateFromHtmlWithLayout(html, {
+      footerTemplate,
+      marginBottom: '14mm',
+    });
   }
 }

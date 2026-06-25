@@ -10,6 +10,7 @@ import { MaternityContractDto } from '../../types/dto/maternity-contract.dto';
 import { MaternityMarcelloContractDto } from '../../types/dto/maternity-marcello-contract.dto';
 import { ResidenceDeclarationContractDto } from '../../types/dto/residence-declaration-contract.dto';
 import { AccidentAssistanceFormDto } from '../../types/dto/accident-assistance-form.dto';
+import { ClevesContractDto } from '../../types/dto/cleves-contract.dto';
 
 @ApiTags('contracts')
 @ApiBearerAuth()
@@ -111,6 +112,26 @@ export class ContractsController {
   async generateAccidentAssistanceForm(@Body() dto: AccidentAssistanceFormDto, @Res() res: Response): Promise<void> {
     const pdf = await this.contractsService.generateAccidentAssistanceForm(dto);
     const encodedFilename = encodeURIComponent(`ficha_auxilio_acidente_${dto.fullName}.pdf`);
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodedFilename}`);
+    res.setHeader('Content-Length', pdf.length);
+    res.send(pdf);
+  }
+
+  @Post('cleves')
+  @RolesAllowed(Roles.ADMIN, Roles.SUPER_ADMIN)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Generate a Cleves Domingos Galliasi services contract PDF' })
+  @UsePipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    }),
+  )
+  async generateCleves(@Body() dto: ClevesContractDto, @Res() res: Response): Promise<void> {
+    const pdf = await this.contractsService.generateClevesContract(dto);
+    const encodedFilename = encodeURIComponent(`auxilio_acidente_${dto.fullName}.pdf`);
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodedFilename}`);
     res.setHeader('Content-Length', pdf.length);

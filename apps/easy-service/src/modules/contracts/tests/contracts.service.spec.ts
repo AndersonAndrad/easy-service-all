@@ -1,5 +1,5 @@
 import { ForbiddenException } from '@nestjs/common';
-import type { AccidentAssistanceFormData, MaternityContractData, ResidenceDeclarationData } from '@easy-service/shared';
+import type { AccidentAssistanceFormData, ClevesContractData, MaternityContractData, ResidenceDeclarationData } from '@easy-service/shared';
 import { Roles } from 'src/shared/enums/roles.enum';
 import { ContractsService } from '../app/contracts.service';
 
@@ -163,6 +163,37 @@ describe('ContractsService', (): void => {
       service = new ContractsService(mockPdfService as never, makeAuthContext([]) as never);
 
       await expect(service.generateAccidentAssistanceForm(FORM_DATA)).rejects.toThrow(ForbiddenException);
+    });
+  });
+
+  describe('generateClevesContract', (): void => {
+    const CLEVES_DATA: ClevesContractData = {
+      fullName: 'JAMIL DA SILVA PINTO',
+      nationality: 'brasileiro',
+      maritalStatus: 'casado',
+      profession: 'porteiro predial',
+      cpf: '874.240.109-72',
+      street: 'Rua Heitor Busato',
+      streetNumber: '99',
+      neighborhood: 'São Gabriel',
+      postalCode: '83.407-060',
+      city: 'COLOMBO',
+      state: 'PR',
+    };
+
+    it('generates a PDF containing the contract data for an admin', async (): Promise<void> => {
+      const result = await service.generateClevesContract(CLEVES_DATA);
+
+      expect(result).toBe(PDF_BUFFER);
+      const [html] = mockPdfService.generateFromHtml.mock.calls[0] as [string];
+      expect(html).toContain(CLEVES_DATA.fullName);
+      expect(html).toContain(CLEVES_DATA.cpf);
+    });
+
+    it('rejects callers without an admin role', async (): Promise<void> => {
+      service = new ContractsService(mockPdfService as never, makeAuthContext([]) as never);
+
+      await expect(service.generateClevesContract(CLEVES_DATA)).rejects.toThrow(ForbiddenException);
     });
   });
 });

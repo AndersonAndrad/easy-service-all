@@ -1,9 +1,9 @@
 import { authConfig } from "@easy-service/shared";
-import type { AccidentAssistanceFormData, MaternityContractData, MaternityMarcelloContractData, ResidenceDeclarationData } from "@easy-service/shared";
+import type { AccidentAssistanceFormData, ClevesContractData, MaternityContractData, MaternityMarcelloContractData, ResidenceDeclarationData } from "@easy-service/shared";
 import { parseErrorMessage } from "@/lib/auth-client";
 import { publicApiClient } from "@/lib/http/public-api-client";
 
-export type { AccidentAssistanceFormData, MaternityContractData, MaternityMarcelloContractData, ResidenceDeclarationData };
+export type { AccidentAssistanceFormData, ClevesContractData, MaternityContractData, MaternityMarcelloContractData, ResidenceDeclarationData };
 
 export type ContractType = {
   id: string;
@@ -46,6 +46,13 @@ export const CONTRACT_TYPES: ContractType[] = [
     label: "Declaração de Residência",
     description: "Declaração de residência para fins de comprovação de endereço.",
     href: "/contracts/residence-declaration",
+  },
+  {
+    id: "cleves",
+    label: "Contrato Auxílio Acidente",
+    description: "Contrato de serviços jurídicos — Cleves Domingos Galliasi.",
+    href: "/contracts/cleves",
+    tag: "Cleves Domingos Galliasi",
   },
 ];
 
@@ -120,6 +127,22 @@ export async function generateResidenceDeclarationContract(
   try {
     const res = await publicApiClient.post<ArrayBuffer>(
       `/contracts/residence-declaration`,
+      body,
+      { ...authConfig(accessToken), responseType: "arraybuffer" }
+    );
+    return new Blob([res.data], { type: "application/pdf" });
+  } catch (error) {
+    throw new Error(await parseErrorMessage(error));
+  }
+}
+
+export async function generateClevesContract(
+  accessToken: string,
+  body: ClevesContractData
+): Promise<Blob> {
+  try {
+    const res = await publicApiClient.post<ArrayBuffer>(
+      "/contracts/cleves",
       body,
       { ...authConfig(accessToken), responseType: "arraybuffer" }
     );
